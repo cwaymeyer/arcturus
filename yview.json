@@ -1,0 +1,190 @@
+[
+  {
+    "rows": [
+      {
+        "condition_keys": "account:AccountResourceOrgPaths",
+        "description": "Filters access by the resource path for an account in an organization",
+        "type": "ArrayOfString"
+      },
+      {
+        "condition_keys": "account:AccountResourceOrgTags/${TagKey}",
+        "description": "Filters access by resource tags for an account in an organization",
+        "type": "ArrayOfString"
+      },
+      {
+        "condition_keys": "account:AlternateContactTypes",
+        "description": "Filters access by alternate contact types",
+        "type": "ArrayOfString"
+      },
+      {
+        "condition_keys": "account:TargetRegion",
+        "description": "Filters access by a list of Regions. Enables or disables all the Regions specified here",
+        "type": "String"
+      }
+    ],
+    "headers": ["condition_keys", "description", "type"]
+  },
+  {
+    "rows": [
+      {
+        "resource_types": "account",
+        "arn": "arn:${Partition}:account::${Account}:account",
+        "condition_keys": ""
+      },
+      {
+        "resource_types": "accountInOrganization",
+        "arn": "arn:${Partition}:account::${ManagementAccountId}:account/o-${OrganizationId}/${MemberAccountId}",
+        "condition_keys": ""
+      }
+    ],
+    "headers": ["resource_types", "arn", "condition_keys"]
+  },
+  {
+    "rows": [
+      {
+        "actions": "CloseAccount [permission only]",
+        "description": "Grants permission to close an account",
+        "access_level": "Write",
+        "resource_types_(*required)": "account",
+        "condition_keys": "",
+        "dependent_actions": ""
+      },
+      {
+        "actions": "DeleteAlternateContact",
+        "description": "Grants permission to delete the alternate contacts for an account",
+        "access_level": "Write",
+        "resource_types_(*required)": "account",
+        "condition_keys": "",
+        "dependent_actions": ""
+      },
+      {
+        "actions": "accountInOrganization",
+        "description": "",
+        "access_level": ""
+      },
+      {
+        "actions": "",
+        "description": "account:AlternateContactTypes",
+        "access_level": ""
+      },
+      {
+        "actions": "DisableRegion",
+        "description": "Grants permission to disable use of a Region",
+        "access_level": "Write",
+        "resource_types_(*required)": "",
+        "condition_keys": "account:TargetRegion",
+        "dependent_actions": ""
+      },
+      {
+        "actions": "EnableRegion",
+        "description": "Grants permission to enable use of a Region",
+        "access_level": "Write",
+        "resource_types_(*required)": "",
+        "condition_keys": "account:TargetRegion",
+        "dependent_actions": ""
+      },
+      {
+        "actions": "GetAccountInformation [permission only]",
+        "description": "Grants permission to retrieve the account information for an account",
+        "access_level": "Read",
+        "resource_types_(*required)": "account",
+        "condition_keys": "",
+        "dependent_actions": ""
+      },
+      {
+        "actions": "GetAlternateContact",
+        "description": "Grants permission to retrieve the alternate contacts for an account",
+        "access_level": "Read",
+        "resource_types_(*required)": "account",
+        "condition_keys": "",
+        "dependent_actions": ""
+      },
+      {
+        "actions": "accountInOrganization",
+        "description": "",
+        "access_level": ""
+      },
+      {
+        "actions": "",
+        "description": "account:AlternateContactTypes",
+        "access_level": ""
+      },
+      {
+        "actions": "GetChallengeQuestions [permission only]",
+        "description": "Grants permission to retrieve the challenge questions for an account",
+        "access_level": "Read",
+        "resource_types_(*required)": "account",
+        "condition_keys": "",
+        "dependent_actions": ""
+      },
+      {
+        "actions": "GetContactInformation",
+        "description": "Grants permission to retrieve the primary contact information for an account",
+        "access_level": "Read",
+        "resource_types_(*required)": "account",
+        "condition_keys": "",
+        "dependent_actions": ""
+      },
+      {
+        "actions": "accountInOrganization",
+        "description": "",
+        "access_level": ""
+      },
+      {
+        "actions": "ListRegions",
+        "description": "Grants permission to list the available Regions",
+        "access_level": "List",
+        "resource_types_(*required)": "",
+        "condition_keys": "",
+        "dependent_actions": ""
+      },
+      {
+        "actions": "PutAlternateContact",
+        "description": "Grants permission to modify the alternate contacts for an account",
+        "access_level": "Write",
+        "resource_types_(*required)": "account",
+        "condition_keys": "",
+        "dependent_actions": ""
+      },
+      {
+        "actions": "accountInOrganization",
+        "description": "",
+        "access_level": ""
+      },
+      {
+        "actions": "",
+        "description": "account:AlternateContactTypes",
+        "access_level": ""
+      },
+      {
+        "actions": "PutChallengeQuestions [permission only]",
+        "description": "Grants permission to modify the challenge questions for an account",
+        "access_level": "Write",
+        "resource_types_(*required)": "account",
+        "condition_keys": "",
+        "dependent_actions": ""
+      },
+      {
+        "actions": "PutContactInformation",
+        "description": "Grants permission to update the primary contact information for an account",
+        "access_level": "Write",
+        "resource_types_(*required)": "account",
+        "condition_keys": "",
+        "dependent_actions": ""
+      },
+      {
+        "actions": "accountInOrganization",
+        "description": "",
+        "access_level": ""
+      }
+    ],
+    "headers": [
+      "actions",
+      "description",
+      "access_level",
+      "resource_types_(*required)",
+      "condition_keys",
+      "dependent_actions"
+    ]
+  }
+]

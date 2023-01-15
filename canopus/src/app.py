@@ -1,9 +1,9 @@
 from bs4 import BeautifulSoup
 import requests
+from get_services import get_aws_services
+from get_data import scrape_conditions_and_resources
 
-BASE_URL = 'https://docs.aws.amazon.com/service-authorization/latest/reference'
-SERVICES_LIST = []
-
+all_services = get_aws_services()
 
 def get_html(url):
     '''Get webpage HTML'''
@@ -11,25 +11,28 @@ def get_html(url):
     response = requests.get(url)
     return response.text
 
+# for service in all_services:
 
-services_url = '/reference_policies_actions-resources-contextkeys.html'
-services_html = get_html(f'{BASE_URL}{services_url}')
-services_soup = BeautifulSoup(services_html, 'html.parser')
+link = all_services[0]['link']
 
-services_list = services_soup.select_one('div[class="highlights"]').find_all('a')
+service_html = get_html(link)
+service_soup = BeautifulSoup(service_html, 'html.parser')
 
-for item in services_list:
-    name = item.text
-    link = item['href']
+tables = service_soup.find_all('table')
 
-    if link[0] == '.':
-        link = link[1:]  # remove '.' from beginning of href
+# condition keys
+if tables[2]:
+    conditions_table = tables[2]
+    condition_keys_data = scrape_conditions_and_resources(conditions_table)
 
-    service_dic = {
-        'name': name,
-        'link': f'{BASE_URL}{link}'
-    }
+# resource types
+if tables[1]:
+    resources_table = tables[1]
+    resource_types_data = scrape_conditions_and_resources(resources_table)
 
-    SERVICES_LIST.append(service_dic)
+# actions
+actions_table = tables[0]
+actions_data = {}
 
-print(SERVICES_LIST)
+print(condition_keys_data)
+print(resource_types_data)
