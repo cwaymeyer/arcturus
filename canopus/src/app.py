@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 from get_services import get_aws_services
-from get_data import scrape_conditions_and_resources
+from get_data import scrape_conditions_and_resources, scrape_actions
 
 all_services = get_aws_services()
 
@@ -13,7 +13,7 @@ def get_html(url):
 
 # for service in all_services:
 
-link = all_services[0]['link']
+link = all_services[4]['link']
 
 service_html = get_html(link)
 service_soup = BeautifulSoup(service_html, 'html.parser')
@@ -32,7 +32,10 @@ if tables[1]:
 
 # actions
 actions_table = tables[0]
-actions_data = {}
 
-print(condition_keys_data)
-print(resource_types_data)
+# extract resource types and condition keys lists
+resource_types = [ value[resource_types_data['headers'][0]] for value in resource_types_data['rows'] ]
+condition_keys = [ value[condition_keys_data['headers'][0]] for value in condition_keys_data['rows'] ]
+
+actions_data = scrape_actions(actions_table, resource_types, condition_keys)
+print(actions_data)
