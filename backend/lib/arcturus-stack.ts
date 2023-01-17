@@ -32,7 +32,7 @@ export class ArcturusStack extends Stack {
           viewerProtocolPolicy:
             cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         },
-        defaultRootObject: "index.html",
+        defaultRootObject: "/public/index.html",
       }
     );
 

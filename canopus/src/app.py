@@ -3,7 +3,6 @@ import requests
 from get_services import get_aws_services
 from get_data import scrape_conditions_and_resources, scrape_actions
 
-all_services = get_aws_services()
 
 def get_html(url):
     '''Get webpage HTML'''
@@ -11,12 +10,14 @@ def get_html(url):
     response = requests.get(url)
     return response.text
 
-def get_iam_data(services):
-    '''Get tabled IAM data for all AWS services'''
 
+def handler(event, context):
+    '''🛰️ Get tabled IAM data for all AWS services 🛰️'''
+
+    all_services = get_aws_services()
     data = []
 
-    for service in services:
+    for service in all_services:
         print('🏃‍♂️ ', service['name'])
         link = service['link']
 
@@ -40,10 +41,12 @@ def get_iam_data(services):
         # actions
         actions_table = tables[0]
         actions_data = scrape_actions(actions_table, resource_types, condition_keys)
-        
-        obj = { 'name': service['name'], 'data': actions_data }
+
+        obj = { 'name': service['name'], 'actions': actions_data }
+        if ('condition_keys_data' in locals()):
+            obj['condition_keys'] = condition_keys_data
+        if ('resource_types_data' in locals()):
+            obj['resource_types'] = resource_types_data
         data.append(obj)
 
     return data
-
-get_iam_data(all_services)
