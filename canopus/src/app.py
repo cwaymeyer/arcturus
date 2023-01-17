@@ -1,9 +1,9 @@
 from bs4 import BeautifulSoup
 import requests
+from get_services import get_aws_services
+from get_data import scrape_conditions_and_resources, scrape_actions
 
-BASE_URL = 'https://docs.aws.amazon.com/service-authorization/latest/reference'
-SERVICES_LIST = []
-
+all_services = get_aws_services()
 
 def get_html(url):
     '''Get webpage HTML'''
@@ -11,25 +11,39 @@ def get_html(url):
     response = requests.get(url)
     return response.text
 
+def get_iam_data(services):
+    '''Get tabled IAM data for all AWS services'''
 
-services_url = '/reference_policies_actions-resources-contextkeys.html'
-services_html = get_html(f'{BASE_URL}{services_url}')
-services_soup = BeautifulSoup(services_html, 'html.parser')
+    data = []
 
-services_list = services_soup.select_one('div[class="highlights"]').find_all('a')
+    for service in services:
+        print('🏃‍♂️ ', service['name'])
+        link = service['link']
 
-for item in services_list:
-    name = item.text
-    link = item['href']
+        service_html = get_html(link)
+        service_soup = BeautifulSoup(service_html, 'html.parser')
 
-    if link[0] == '.':
-        link = link[1:]  # remove '.' from beginning of href
+        tables = service_soup.find_all('table')
 
-    service_dic = {
-        'name': name,
-        'link': f'{BASE_URL}{link}'
-    }
+        # condition keys
+        if len(tables) == 3:
+            conditions_table = tables[2]
+            condition_keys_data = scrape_conditions_and_resources(conditions_table)
+            condition_keys = [ value[condition_keys_data['headers'][0]] for value in condition_keys_data['rows'] ] # extract resource types and condition keys lists
 
-    SERVICES_LIST.append(service_dic)
+        # resource types
+        if len(tables) >= 2:
+            resources_table = tables[1]
+            resource_types_data = scrape_conditions_and_resources(resources_table)
+            resource_types = [ value[resource_types_data['headers'][0]] for value in resource_types_data['rows'] ]
 
-print(SERVICES_LIST)
+        # actions
+        actions_table = tables[0]
+        actions_data = scrape_actions(actions_table, resource_types, condition_keys)
+        
+        obj = { 'name': service['name'], 'data': actions_data }
+        data.append(obj)
+
+    return data
+
+get_iam_data(all_services)
