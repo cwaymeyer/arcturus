@@ -44,7 +44,7 @@ export class CanopusStack extends Stack {
     const task = new eventstargets.EcsTask({ cluster, taskDefinition });
 
     const schedule = new events.Rule(this, "Canopus_Rule", {
-      schedule: events.Schedule.expression("cron(00 15 ? 4-9 2 *)"),
+      schedule: events.Schedule.expression("cron(00 21 1 * ? *)"),
     });
 
     schedule.addTarget(task);
