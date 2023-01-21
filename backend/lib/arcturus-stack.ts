@@ -23,7 +23,7 @@ export class ArcturusStack extends Stack {
       bucketName: "arcturus-source",
       websiteIndexDocument: "index.html",
       publicReadAccess: true,
-      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      // blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       autoDeleteObjects: true,
       removalPolicy: RemovalPolicy.DESTROY,
     });
@@ -76,7 +76,7 @@ export class ArcturusStack extends Stack {
     );
 
     new s3_deployment.BucketDeployment(this, "arcturus-deployment", {
-      sources: [s3_deployment.Source.asset("../frontend")],
+      sources: [s3_deployment.Source.asset("../frontend/build")],
       destinationBucket: bucket,
       distribution,
       distributionPaths: ["/*"],
