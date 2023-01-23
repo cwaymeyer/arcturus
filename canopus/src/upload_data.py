@@ -4,10 +4,11 @@ dynamo_db = boto3.resource('dynamodb')
 table = dynamo_db.Table('Canopus_Data') # TODO: put table name in env variables
 
 
-def put_item_in_dynamo(data):
+def put_single_item_in_dynamo(data):
     '''add a single item to DynamoDB'''
+
     try:
-        batch.put_item(
+        table.put_item(
             Item=data
         )
     except Exception as err:
@@ -16,6 +17,15 @@ def put_item_in_dynamo(data):
 
 def upload_iam_data_to_dynamo(service_data):
     '''upload scraped data to DynamoDB'''
+
+    def batch_put_item_in_dynamo(data):
+        '''add a single item to DynamoDB with batch writer'''
+        try:
+            batch.put_item(
+                Item=data
+            )
+        except Exception as err:
+            print(err)
 
     for service in service_data:
         with table.batch_writer(overwrite_by_pkeys=['service', 'sk']) as batch:
@@ -36,7 +46,7 @@ def upload_iam_data_to_dynamo(service_data):
                     'dependent_actions': item['dependent_actions']
                 }
 
-                put_item_in_dynamo(action_item_data)
+                batch_put_item_in_dynamo(action_item_data)
 
             if service['resource_types']:
                 for item in service['resource_types']['rows']:
@@ -49,7 +59,7 @@ def upload_iam_data_to_dynamo(service_data):
                         'condition_keys': item['condition_keys']
                     }
 
-                    put_item_in_dynamo(resource_item_data)
+                    batch_put_item_in_dynamo(resource_item_data)
 
             if service['condition_keys']:
                 for item in service['condition_keys']['rows']:
@@ -62,4 +72,4 @@ def upload_iam_data_to_dynamo(service_data):
                         'type': item['type']
                     }
 
-                    put_item_in_dynamo(condition_item_data)
+                    batch_put_item_in_dynamo(condition_item_data)
