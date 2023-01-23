@@ -31,17 +31,12 @@ jobs:
           aws-region: us-east-1
           role-duration-seconds: 1200
 
-      - name: Install and build frontend code
-        working-directory: ./frontend
-        run: |
-          npm ci
-          npm run build
-
       - name: Install, build and deploy infrastructure
         working-directory: ./backend
         run: |
           sudo npm i -g aws-cdk@2.59.0
           npm ci
+          npm run build
           cdk deploy CanopusStack --require-approval=never
 
       - name: Login to ECR
