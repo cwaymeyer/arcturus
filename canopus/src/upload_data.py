@@ -5,7 +5,7 @@ table = dynamo_db.Table('Canopus_Data') # TODO: put table name in env variables
 
 
 def put_single_item_in_dynamo(data):
-'''add a single item to DynamoDB'''
+    '''add a single item to DynamoDB'''
 
     try:
         table.put_item(
@@ -16,10 +16,10 @@ def put_single_item_in_dynamo(data):
 
 
 def upload_iam_data_to_dynamo(service_data):
-'''upload scraped data to DynamoDB'''
+    '''upload scraped data to DynamoDB'''
 
     def batch_put_item_in_dynamo(data):
-    '''add a single item to DynamoDB with batch writer'''
+        '''add a single item to DynamoDB with batch writer'''
         try:
             batch.put_item(
                 Item=data
