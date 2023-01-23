@@ -1,5 +1,4 @@
-import React from "react";
-import { Grommet, Page, Heading, Grid, Box, Text } from "grommet";
+import { Grommet, Heading, Box, Text } from "grommet";
 import AppBar from "./components/AppBar";
 
 const theme = {
