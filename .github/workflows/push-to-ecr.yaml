@@ -31,6 +31,12 @@ jobs:
           aws-region: us-east-1
           role-duration-seconds: 1200
 
+      - name: Install and build frontend code
+        working-directory: ./frontend
+        run: |
+          npm ci
+          npm run build
+
       - name: Install, build and deploy infrastructure
         working-directory: ./backend
         run: |
