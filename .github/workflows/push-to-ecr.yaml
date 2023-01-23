@@ -33,7 +33,10 @@ jobs:
 
       - name: Build frontend code
         working-directory: ./frontend
-        run: npm run build
+        run: |
+          pwd
+          ls
+          npm run build
 
       - name: Install, build and deploy infrastructure
         working-directory: ./backend
