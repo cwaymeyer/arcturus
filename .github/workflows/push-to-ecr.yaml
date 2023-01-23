@@ -21,7 +21,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 16
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -31,11 +31,18 @@ jobs:
           aws-region: us-east-1
           role-duration-seconds: 1200
 
+      - name: Install and build frontend code
+        working-directory: ./frontend
+        run: |
+          npm ci
+          npm run build
+
       - name: Install, build and deploy infrastructure
         working-directory: ./backend
         run: |
           sudo npm i -g aws-cdk@2.59.0
           npm ci
+          npm run build
           cdk deploy CanopusStack --require-approval=never
 
       - name: Login to ECR
@@ -44,6 +51,6 @@ jobs:
       - name: Push to ECR
         working-directory: ./canopus/src
         run: |
-          docker build -t ${{ env.ECR_REPOSITORY }} .
-          docker tag ${{ env.ECR_REPOSITORY }}:${{ env.ECR_IMAGE_TAG }} ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.ECR_IMAGE_TAG }}
-          docker push ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.ECR_IMAGE_TAG }}
+          docker build -t $ECR_REPOSITORY .
+          docker tag $ECR_REPOSITORY:$ECR_IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$ECR_IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$ECR_IMAGE_TAG

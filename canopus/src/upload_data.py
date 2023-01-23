@@ -4,16 +4,18 @@ dynamo_db = boto3.resource('dynamodb')
 table = dynamo_db.Table('Canopus_Data') # TODO: put table name in env variables
 
 
-def batch_upload_to_dynamo(service_data):
-    '''upload data to Dynamo DB'''
+def put_item_in_dynamo(data):
+    '''add a single item to DynamoDB'''
+    try:
+        batch.put_item(
+            Item=data
+        )
+    except Exception as err:
+        print(err)
 
-    def put_item_in_dynamo(data):
-        try:
-            batch.put_item(
-                Item=data
-            )
-        except Exception as err:
-            print(err)
+
+def upload_iam_data_to_dynamo(service_data):
+    '''upload scraped data to DynamoDB'''
 
     for service in service_data:
         with table.batch_writer(overwrite_by_pkeys=['service', 'sk']) as batch:
