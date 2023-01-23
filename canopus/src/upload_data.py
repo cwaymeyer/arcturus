@@ -46,7 +46,7 @@ def upload_iam_data_to_dynamo(service_data):
                     'dependent_actions': item['dependent_actions']
                 }
 
-                put_item_in_dynamo(action_item_data)
+                batch_put_item_in_dynamo(action_item_data)
 
             if service['resource_types']:
                 for item in service['resource_types']['rows']:
@@ -59,7 +59,7 @@ def upload_iam_data_to_dynamo(service_data):
                         'condition_keys': item['condition_keys']
                     }
 
-                    put_item_in_dynamo(resource_item_data)
+                    batch_put_item_in_dynamo(resource_item_data)
 
             if service['condition_keys']:
                 for item in service['condition_keys']['rows']:
@@ -72,4 +72,4 @@ def upload_iam_data_to_dynamo(service_data):
                         'type': item['type']
                     }
 
-                    put_item_in_dynamo(condition_item_data)
+                    batch_put_item_in_dynamo(condition_item_data)

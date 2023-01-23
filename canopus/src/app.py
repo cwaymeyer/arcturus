@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 import requests
 from get_services import get_aws_services
 from get_data import scrape_conditions_and_resources, scrape_actions
-from upload_data import upload_iam_data_to_dynamo, put_item_in_dynamo
+from upload_data import upload_iam_data_to_dynamo, put_single_item_in_dynamo
 
 
 def get_html(url):
@@ -27,7 +27,7 @@ def handler(event, context):
             'sk': service['name'],
         }
 
-        put_item_in_dynamo(service_name)
+        put_single_item_in_dynamo(service_name)
 
         # get service link to scrape actions, resources and conditions
         link = service['link']
