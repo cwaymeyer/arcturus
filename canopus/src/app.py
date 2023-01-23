@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 import requests
 from get_services import get_aws_services
 from get_data import scrape_conditions_and_resources, scrape_actions
-from upload_data import batch_upload_to_dynamo
+from upload_data import upload_iam_data_to_dynamo, put_item_in_dynamo
 
 
 def get_html(url):
@@ -20,6 +20,16 @@ def handler(event, context):
 
     for service in all_services:
         print('🏃‍♂️ ', service['name'])
+
+        # put service name in dynamo under 'SERVICE_NAMES' pk for quick access
+        service_name = {
+            'service': 'SERVICE_NAMES',
+            'sk': service['name'],
+        }
+
+        put_item_in_dynamo(service_name)
+
+        # get service link to scrape actions, resources and conditions
         link = service['link']
 
         service_html = get_html(link)
@@ -59,7 +69,7 @@ def handler(event, context):
             obj['resource_types'] = resource_types_data
         data.append(obj)
 
-    batch_upload_to_dynamo(data)
+    upload_iam_data_to_dynamo(data)
 
     return data
 
