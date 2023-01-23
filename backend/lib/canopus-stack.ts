@@ -31,6 +31,9 @@ export class CanopusStack extends Stack {
 
     taskDefinition.addContainer("Canopus_Container", {
       image: ecs.ContainerImage.fromAsset("../canopus/src"),
+      logging: ecs.LogDriver.awsLogs({
+        streamPrefix: "Canopus",
+      }),
     });
 
     taskDefinition.addToTaskRolePolicy(
