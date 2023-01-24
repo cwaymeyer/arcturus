@@ -85,7 +85,7 @@ export class CanopusStack extends Stack {
 
     const api = new apigateway.LambdaRestApi(this, "Canopus_API", {
       handler: lambdaBackend,
-      proxy: false,
+      proxy: true,
       integrationOptions: {
         timeout: Duration.seconds(15),
       },
