@@ -87,7 +87,7 @@ export class CanopusStack extends Stack {
       handler: lambdaBackend,
       proxy: false,
       integrationOptions: {
-        timeout: Duration.seconds(30),
+        timeout: Duration.seconds(15),
       },
     });
 
