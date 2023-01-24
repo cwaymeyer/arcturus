@@ -13,9 +13,6 @@ import {
   RemovalPolicy,
   Duration,
 } from "aws-cdk-lib";
-import { AccessLogFormat } from "aws-cdk-lib/aws-apigateway";
-import { Runtime } from "aws-cdk-lib/aws-lambda";
-import { RetentionDays } from "aws-cdk-lib/aws-logs";
 import { Construct } from "constructs";
 
 export class CanopusStack extends Stack {
@@ -62,7 +59,10 @@ export class CanopusStack extends Stack {
 
     const libraryLayer = new lambda.LayerVersion(this, "Canopus_LibraryLayer", {
       code: lambda.Code.fromAsset("./src/library"),
-      compatibleRuntimes: [Runtime.NODEJS_16_X, Runtime.NODEJS_18_X],
+      compatibleRuntimes: [
+        lambda.Runtime.NODEJS_16_X,
+        lambda.Runtime.NODEJS_18_X,
+      ],
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
@@ -78,23 +78,24 @@ export class CanopusStack extends Stack {
         bundling: {
           minify: true,
         },
-        runtime: Runtime.NODEJS_16_X,
+        runtime: lambda.Runtime.NODEJS_16_X,
         memorySize: 512,
         timeout: Duration.seconds(30),
-        logRetention: RetentionDays.ONE_WEEK,
+        logRetention: logs.RetentionDays.ONE_WEEK,
       }
     );
 
     const canopusLogs = new logs.LogGroup(this, "Canopus_Logs", {
       logGroupName: "Canopus_Logs",
       removalPolicy: RemovalPolicy.DESTROY,
-      retention: RetentionDays.ONE_WEEK,
+      retention: logs.RetentionDays.ONE_WEEK,
     });
 
     const apiLogPolicy = new iam.PolicyDocument({
       statements: [
         new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
+          principals: [new iam.ServicePrincipal("apigateway.amazonaws.com")],
           resources: ["*Canopus*"],
           actions: [
             "logs:CreateLogGroup",
@@ -116,7 +117,7 @@ export class CanopusStack extends Stack {
         accessLogDestination: new apigateway.LogGroupLogDestination(
           canopusLogs
         ),
-        accessLogFormat: AccessLogFormat.jsonWithStandardFields(),
+        accessLogFormat: apigateway.AccessLogFormat.jsonWithStandardFields(),
       },
       policy: apiLogPolicy,
     });
