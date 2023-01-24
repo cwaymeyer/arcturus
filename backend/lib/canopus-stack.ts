@@ -6,8 +6,14 @@ import {
   aws_events as events,
   aws_events_targets as eventstargets,
   aws_iam as iam,
+  aws_apigateway as apigateway,
+  aws_lambda_nodejs as nodejs_lambda,
+  aws_lambda as lambda,
   RemovalPolicy,
+  Duration,
 } from "aws-cdk-lib";
+import { Runtime } from "aws-cdk-lib/aws-lambda";
+import { RetentionDays } from "aws-cdk-lib/aws-logs";
 import { Construct } from "constructs";
 
 export class CanopusStack extends Stack {
@@ -51,5 +57,34 @@ export class CanopusStack extends Stack {
     });
 
     schedule.addTarget(task);
+
+    const libraryLayer = new lambda.LayerVersion(this, "Canopus_LibraryLayer", {
+      code: lambda.Code.fromAsset("./src/library"),
+      compatibleRuntimes: [Runtime.NODEJS_16_X, Runtime.NODEJS_18_X],
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+
+    // API for frontend access
+    const lambdaBackend = new nodejs_lambda.NodejsFunction(
+      this,
+      "Canopus_API_Resolver",
+      {
+        functionName: "Canopus_API_Resolver",
+        entry: "src/api-lambda/main.ts",
+        handler: "handler",
+        layers: [libraryLayer],
+        bundling: {
+          minify: true,
+        },
+        runtime: Runtime.NODEJS_16_X,
+        memorySize: 512,
+        timeout: Duration.seconds(30),
+        logRetention: RetentionDays.ONE_WEEK,
+      }
+    );
+
+    new apigateway.LambdaRestApi(this, "Canopus_API", {
+      handler: lambdaBackend,
+    });
   }
 }
