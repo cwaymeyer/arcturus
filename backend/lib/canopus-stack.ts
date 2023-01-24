@@ -9,9 +9,11 @@ import {
   aws_apigateway as apigateway,
   aws_lambda_nodejs as nodejs_lambda,
   aws_lambda as lambda,
+  aws_logs as logs,
   RemovalPolicy,
   Duration,
 } from "aws-cdk-lib";
+import { AccessLogFormat } from "aws-cdk-lib/aws-apigateway";
 import { Runtime } from "aws-cdk-lib/aws-lambda";
 import { RetentionDays } from "aws-cdk-lib/aws-logs";
 import { Construct } from "constructs";
@@ -83,15 +85,28 @@ export class CanopusStack extends Stack {
       }
     );
 
+    const canopusLogs = new logs.LogGroup(this, "Canopus_Logs", {
+      logGroupName: "Canopus_Logs",
+      removalPolicy: RemovalPolicy.DESTROY,
+      retention: RetentionDays.ONE_WEEK,
+    });
+
     const api = new apigateway.LambdaRestApi(this, "Canopus_API", {
       handler: lambdaBackend,
-      proxy: true,
+      proxy: false,
       integrationOptions: {
         timeout: Duration.seconds(15),
       },
+      deployOptions: {
+        stageName: process.env.STAGE_NAME || "dev",
+        accessLogDestination: new apigateway.LogGroupLogDestination(
+          canopusLogs
+        ),
+        accessLogFormat: AccessLogFormat.jsonWithStandardFields(),
+      },
     });
 
-    // const services = api.root.addResource("services");
-    // services.addMethod("GET");
+    const services = api.root.addResource("services");
+    services.addMethod("GET");
   }
 }
