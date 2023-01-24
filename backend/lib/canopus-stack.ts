@@ -120,6 +120,7 @@ export class CanopusStack extends Stack {
         accessLogFormat: apigateway.AccessLogFormat.jsonWithStandardFields(),
       },
       policy: apiLogPolicy,
+      cloudWatchRole: false, // https://github.com/aws/aws-cdk/issues/10878
     });
 
     const services = api.root.addResource("services");
