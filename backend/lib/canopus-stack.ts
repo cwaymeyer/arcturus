@@ -83,8 +83,12 @@ export class CanopusStack extends Stack {
       }
     );
 
-    new apigateway.LambdaRestApi(this, "Canopus_API", {
+    const api = new apigateway.LambdaRestApi(this, "Canopus_API", {
       handler: lambdaBackend,
+      proxy: false,
     });
+
+    const services = api.root.addResource("services");
+    services.addMethod("GET");
   }
 }
