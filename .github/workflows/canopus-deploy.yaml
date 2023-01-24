@@ -1,4 +1,4 @@
-name: ECS Fargate Task Deployment
+name: Canopus Deployment
 
 on:
   workflow_dispatch:
