@@ -40,7 +40,7 @@ jobs:
       - name: Install, build and deploy infrastructure
         working-directory: ./backend
         run: |
-          sudo npm i -g aws-cdk@2.59.0
+          sudo npm i -g aws-cdk@2.61.0
           npm ci
           npm run build
           cdk deploy CanopusStack --require-approval=never
