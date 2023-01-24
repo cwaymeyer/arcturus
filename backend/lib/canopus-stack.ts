@@ -114,13 +114,13 @@ export class CanopusStack extends Stack {
       },
       deployOptions: {
         stageName: process.env.STAGE_NAME || "dev",
-        accessLogDestination: new apigateway.LogGroupLogDestination(
-          canopusLogs
-        ),
-        accessLogFormat: apigateway.AccessLogFormat.jsonWithStandardFields(),
+        // accessLogDestination: new apigateway.LogGroupLogDestination(
+        //   canopusLogs
+        // ),
+        // accessLogFormat: apigateway.AccessLogFormat.jsonWithStandardFields(),
       },
       policy: apiLogPolicy,
-      cloudWatchRole: false, // https://github.com/aws/aws-cdk/issues/10878
+      cloudWatchRole: true, // https://github.com/aws/aws-cdk/issues/10878
       defaultCorsPreflightOptions: {
         allowOrigins: apigateway.Cors.ALL_ORIGINS,
         allowMethods: apigateway.Cors.ALL_METHODS,
