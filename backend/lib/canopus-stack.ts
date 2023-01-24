@@ -1,3 +1,4 @@
+import { CreateTableCommand } from "@aws-sdk/client-dynamodb";
 import {
   Stack,
   StackProps,
@@ -6,7 +7,7 @@ import {
   aws_events as events,
   aws_events_targets as eventstargets,
   aws_iam as iam,
-  aws_apigateway as apigateway,
+  aws_appsync as appsync,
   aws_lambda_nodejs as nodejs_lambda,
   aws_lambda as lambda,
   aws_logs as logs,
@@ -19,6 +20,14 @@ export class CanopusStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
+    const table = this.createDynamoTable();
+    this.createFargateTask(table.tableArn);
+
+    const graphqlEndpoints = ["getServices"];
+    this.createGraphQLAPI(graphqlEndpoints);
+  }
+
+  createDynamoTable = () => {
     const table = new dynamodb.Table(this, "Canopus_Data", {
       tableName: "Canopus_Data",
       partitionKey: { name: "service", type: dynamodb.AttributeType.STRING },
@@ -26,7 +35,10 @@ export class CanopusStack extends Stack {
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
-    // ECS Fargate
+    return table;
+  };
+
+  createFargateTask = (tableArn: string) => {
     const cluster = new ecs.Cluster(this, "Canopus_Cluster");
 
     const taskDefinition = new ecs.FargateTaskDefinition(
@@ -44,7 +56,7 @@ export class CanopusStack extends Stack {
     taskDefinition.addToTaskRolePolicy(
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
-        resources: [table.tableArn],
+        resources: [tableArn],
         actions: ["dynamodb:*"],
       })
     );
@@ -56,7 +68,9 @@ export class CanopusStack extends Stack {
     });
 
     schedule.addTarget(task);
+  };
 
+  createGraphQLAPI = (endpoints: string[]) => {
     const libraryLayer = new lambda.LayerVersion(this, "Canopus_LibraryLayer", {
       code: lambda.Code.fromAsset("./src/library"),
       compatibleRuntimes: [
@@ -66,13 +80,12 @@ export class CanopusStack extends Stack {
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
-    // API for frontend access
-    const lambdaBackend = new nodejs_lambda.NodejsFunction(
+    const resolverLambda = new nodejs_lambda.NodejsFunction(
       this,
       "Canopus_API_Resolver",
       {
         functionName: "Canopus_API_Resolver",
-        entry: "src/api-lambda/main.ts",
+        entry: "src/resolver-lambda/main.ts",
         handler: "handler",
         layers: [libraryLayer],
         bundling: {
@@ -85,50 +98,24 @@ export class CanopusStack extends Stack {
       }
     );
 
-    const canopusLogs = new logs.LogGroup(this, "Canopus_Logs", {
-      logGroupName: "Canopus_Logs",
-      removalPolicy: RemovalPolicy.DESTROY,
-      retention: logs.RetentionDays.ONE_WEEK,
-    });
-
-    const apiLogPolicy = new iam.PolicyDocument({
-      statements: [
-        new iam.PolicyStatement({
-          effect: iam.Effect.ALLOW,
-          principals: [new iam.ServicePrincipal("apigateway.amazonaws.com")],
-          resources: ["*Canopus*"],
-          actions: [
-            "logs:CreateLogGroup",
-            "logs:CreateLogStream",
-            "logs:PutLogEvents",
-          ],
-        }),
-      ],
-    });
-
-    const api = new apigateway.LambdaRestApi(this, "Canopus_API", {
-      handler: lambdaBackend,
-      proxy: false,
-      integrationOptions: {
-        timeout: Duration.seconds(15),
-      },
-      deployOptions: {
-        stageName: process.env.STAGE_NAME || "dev",
-        // accessLogDestination: new apigateway.LogGroupLogDestination(
-        //   canopusLogs
-        // ),
-        // accessLogFormat: apigateway.AccessLogFormat.jsonWithStandardFields(),
-      },
-      policy: apiLogPolicy,
-      cloudWatchRole: true, // https://github.com/aws/aws-cdk/issues/10878
-      defaultCorsPreflightOptions: {
-        allowOrigins: apigateway.Cors.ALL_ORIGINS,
-        allowMethods: apigateway.Cors.ALL_METHODS,
-        // allowOrigins: ["<url>"],
+    const api = new appsync.GraphqlApi(this, "Canopus_API", {
+      name: "Canopus_API",
+      schema: appsync.SchemaFile.fromAsset("./src/graphql/schema.graphql"),
+      logConfig: {
+        retention: logs.RetentionDays.ONE_WEEK,
       },
     });
 
-    const services = api.root.addResource("services");
-    services.addMethod("GET");
-  }
+    const lambdaDataSource = api.addLambdaDataSource(
+      "Canopus_Lambda_DS",
+      resolverLambda
+    );
+
+    endpoints.forEach((endpoint) => {
+      lambdaDataSource.createResolver("Canopus_Lambda_Resolver", {
+        fieldName: endpoint,
+        typeName: "Query",
+      });
+    });
+  };
 }

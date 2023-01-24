@@ -7,7 +7,7 @@ import { DynamoDBClient, QueryCommand } from "@aws-sdk/client-dynamodb";
 
 const client = new DynamoDBClient({});
 
-export class DynamoDB {
+export class Dynamo {
   static queryTable = async (
     tableName: string,
     condition: string,
@@ -17,8 +17,8 @@ export class DynamoDB {
     const command = new QueryCommand({
       TableName: `NoteMaster_${tableName}`, // name of table
       KeyConditionExpression: condition, // key values for item retrieval
-      FilterExpression: filterExp, // filters applied after query operation
       ProjectionExpression: projectionExp, // which attributes to return
+      FilterExpression: filterExp, // filters applied after query operation
     });
     try {
       const response = await client.send(command);
