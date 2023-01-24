@@ -91,7 +91,7 @@ export class CanopusStack extends Stack {
       },
     });
 
-    const services = api.root.addResource("services");
-    services.addMethod("GET");
+    // const services = api.root.addResource("services");
+    // services.addMethod("GET");
   }
 }
