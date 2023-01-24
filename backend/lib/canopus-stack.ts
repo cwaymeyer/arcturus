@@ -91,6 +91,20 @@ export class CanopusStack extends Stack {
       retention: RetentionDays.ONE_WEEK,
     });
 
+    const apiLogPolicy = new iam.PolicyDocument({
+      statements: [
+        new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          resources: ["*Canopus*"],
+          actions: [
+            "logs:CreateLogGroup",
+            "logs:CreateLogStream",
+            "logs:PutLogEvents",
+          ],
+        }),
+      ],
+    });
+
     const api = new apigateway.LambdaRestApi(this, "Canopus_API", {
       handler: lambdaBackend,
       proxy: false,
@@ -104,6 +118,7 @@ export class CanopusStack extends Stack {
         ),
         accessLogFormat: AccessLogFormat.jsonWithStandardFields(),
       },
+      policy: apiLogPolicy,
     });
 
     const services = api.root.addResource("services");
