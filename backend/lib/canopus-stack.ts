@@ -14,6 +14,7 @@ import {
   RemovalPolicy,
   Duration,
 } from "aws-cdk-lib";
+import { table } from "console";
 import { Construct } from "constructs";
 
 export class CanopusStack extends Stack {
@@ -24,7 +25,7 @@ export class CanopusStack extends Stack {
     this.createFargateTask(table.tableArn);
 
     const graphqlEndpoints = ["getServices"];
-    this.createGraphQLAPI(graphqlEndpoints);
+    this.createGraphQLAPI(graphqlEndpoints, table);
   }
 
   createDynamoTable = () => {
@@ -70,7 +71,7 @@ export class CanopusStack extends Stack {
     schedule.addTarget(task);
   };
 
-  createGraphQLAPI = (endpoints: string[]) => {
+  createGraphQLAPI = (endpoints: string[], dynamoTable: dynamodb.Table) => {
     const libraryLayer = new lambda.LayerVersion(this, "Canopus_LibraryLayer", {
       code: lambda.Code.fromAsset("./src/library"),
       compatibleRuntimes: [
@@ -97,6 +98,8 @@ export class CanopusStack extends Stack {
         logRetention: logs.RetentionDays.ONE_WEEK,
       }
     );
+
+    dynamoTable.grantReadData(resolverLambda);
 
     const api = new appsync.GraphqlApi(this, "Canopus_API", {
       name: "Canopus_API",

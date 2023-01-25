@@ -1,5 +1,5 @@
 type Query {
-  getServices: [String]!
+  getServices: String!
 }
 
 schema {

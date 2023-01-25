@@ -13,5 +13,5 @@ export const getServices = async () => {
     returnAttributes
   );
 
-  return await response;
+  return JSON.stringify(response);
 };
