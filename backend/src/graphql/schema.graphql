@@ -1,0 +1,7 @@
+type Query {
+  getServices: String!
+}
+
+schema {
+  query: Query
+}
