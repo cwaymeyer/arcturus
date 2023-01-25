@@ -9,13 +9,14 @@ const client = new DynamoDBClient({});
 
 export class Dynamo {
   static queryTable = async (
-    tableName: string,
+    attributeVals: any,
     condition: string,
-    filterExp?: string,
-    projectionExp?: string
+    projectionExp?: string,
+    filterExp?: string
   ) => {
     const command = new QueryCommand({
-      TableName: `NoteMaster_${tableName}`, // name of table
+      TableName: "Canopus_Data",
+      ExpressionAttributeValues: attributeVals, // values to be substituted
       KeyConditionExpression: condition, // key values for item retrieval
       ProjectionExpression: projectionExp, // which attributes to return
       FilterExpression: filterExp, // filters applied after query operation

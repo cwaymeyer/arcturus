@@ -1,12 +1,17 @@
 import { Dynamo } from "../library/Dynamo";
 
-export const getServices = async (tableName: string) => {
+export const getServices = async () => {
   console.log("☄️ Get Services ☄️");
 
-  const query = "service = :SERVICE_NAMES";
+  const attributeValues = { ":pk": { S: "SERVICE_NAMES" } };
+  const query = "service = :pk";
   const returnAttributes = "sk";
 
-  const result = Dynamo.queryTable(tableName, query, returnAttributes);
+  const response = await Dynamo.queryTable(
+    attributeValues,
+    query,
+    returnAttributes
+  );
 
-  return result;
+  return await response;
 };
