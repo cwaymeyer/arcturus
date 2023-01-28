@@ -1,9 +1,8 @@
-import React from "react";
 import { Header } from "grommet";
 
 const AppBar = (props: any): any => (
   <Header
-    background="brand"
+    background="primary"
     pad={{ left: "medium", right: "small", vertical: "small" }}
     elevation="medium"
     {...props}

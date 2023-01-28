@@ -1,4 +1,6 @@
-import { Grommet, Heading, Box, Text } from "grommet";
+import { useState, useEffect } from "react";
+import { Grommet, Heading, Box, Text, Button } from "grommet";
+import { Api } from "./library/Api";
 import AppBar from "./components/AppBar";
 
 const theme = {
@@ -19,40 +21,70 @@ const theme = {
 };
 
 const App = () => {
-  return (
-    <Grommet theme={theme}>
-      <AppBar>
-        <Text size="large">IAM Generator</Text>
-      </AppBar>
-      <Heading size="small">Create a new IAM policy</Heading>
-      <Box
-        height="large"
-        direction="row"
-        gap="small"
-        border={{ color: "primary", size: "small" }}
-        pad="small"
-      >
+  const [servicesData, setServicesData]: any = useState([]);
+
+  useEffect(() => {
+    const getServices = async () => {
+      // set state from local storage if exists
+      const checkServices = localStorage.getItem("services");
+      if (checkServices) {
+        const services = JSON.parse(checkServices);
+        setServicesData(services);
+      } else {
+        const data: any = await Api.getServices();
+
+        localStorage.setItem("services", JSON.stringify(data.Items));
+        const services = localStorage.getItem("services");
+        const parsedServices = JSON.parse(services!);
+
+        setServicesData(parsedServices);
+      }
+    };
+    getServices();
+  }, []);
+
+  if (servicesData.length) {
+    return (
+      <Grommet theme={theme}>
+        <AppBar color="primary">
+          <Text size="large">IAM Generator</Text>
+        </AppBar>
+        <Heading size="small">Create a new IAM policy</Heading>
         <Box
-          pad="large"
-          border={{ color: "tertiary", size: "small" }}
-          justify="stretch"
-          fill="horizontal"
-        />
-        <Box
-          pad="large"
-          border={{ color: "tertiary", size: "small" }}
-          justify="stretch"
-          fill="horizontal"
-        />
-        <Box
-          pad="large"
-          border={{ color: "tertiary", size: "small" }}
-          justify="stretch"
-          fill="horizontal"
-        />
-      </Box>
-    </Grommet>
-  );
+          height="large"
+          direction="row"
+          gap="small"
+          border={{ color: "primary", size: "small" }}
+          pad="small"
+        >
+          <Box
+            pad="large"
+            border={{ color: "tertiary", size: "small" }}
+            justify="stretch"
+            fill="horizontal"
+          >
+            {servicesData.map((service: any) => (
+              <Button label={service.sk.S} />
+            ))}
+          </Box>
+          <Box
+            pad="large"
+            border={{ color: "tertiary", size: "small" }}
+            justify="stretch"
+            fill="horizontal"
+          />
+          <Box
+            pad="large"
+            border={{ color: "tertiary", size: "small" }}
+            justify="stretch"
+            fill="horizontal"
+          />
+        </Box>
+      </Grommet>
+    );
+  } else {
+    return <Text>Loading...</Text>;
+  }
 };
 
 export default App;
