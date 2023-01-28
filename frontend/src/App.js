@@ -21,19 +21,9 @@ const theme = {
   },
 };
 
-interface OpenObj {
-  [key: string]: string;
-}
-
-interface ServiceDataResponse extends OpenObj {}
-
-interface ServiceDataState {
-  sk: { S: string };
-}
-
 const App = () => {
-  const [servicesData, setServicesData]: any = useState([]);
-  const [displayedServices, setDisplayedServices]: any = useState([]);
+  const [servicesData, setServicesData] = useState([]);
+  const [displayedServices, setDisplayedServices] = useState([]);
 
   useEffect(() => {
     const getServices = async () => {
@@ -44,11 +34,11 @@ const App = () => {
         setServicesData(services);
         setDisplayedServices(services);
       } else {
-        const data: any = await Api.getServices();
+        const data = await Api.getServices();
 
         localStorage.setItem("services", JSON.stringify(data.Items));
         const services = localStorage.getItem("services");
-        const parsedServices = JSON.parse(services!);
+        const parsedServices = JSON.parse(services);
 
         setServicesData(parsedServices);
         setDisplayedServices(parsedServices);
@@ -56,8 +46,6 @@ const App = () => {
     };
     getServices();
   }, []);
-
-  console.log(servicesData);
 
   if (servicesData.length) {
     return (
@@ -91,14 +79,14 @@ const App = () => {
               focusIndicator={false}
               onChange={(e) => {
                 const val = e.target.value.toLowerCase();
-                const filteredServices = servicesData.filter((service: any) => {
+                const filteredServices = servicesData.filter((service) => {
                   const serviceName = service.sk.S.toLowerCase();
                   return serviceName.includes(val);
                 });
                 setDisplayedServices(filteredServices);
               }}
             />
-            {displayedServices.map((service: any) => (
+            {displayedServices.map((service) => (
               <Button
                 color="primary"
                 label={service.sk.S}
@@ -125,7 +113,7 @@ const App = () => {
       </Grommet>
     );
   } else {
-    return <Text>Loading...</Text>;
+    return <Text size="large">Loading...</Text>;
   }
 };
 
