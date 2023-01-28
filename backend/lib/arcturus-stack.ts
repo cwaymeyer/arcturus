@@ -76,7 +76,7 @@ export class ArcturusStack extends Stack {
     );
 
     new s3_deployment.BucketDeployment(this, "arcturus-deployment", {
-      sources: [s3_deployment.Source.asset("../frontend/build")],
+      sources: [s3_deployment.Source.asset("../frontend")],
       destinationBucket: bucket,
       distribution,
       distributionPaths: ["/*"],

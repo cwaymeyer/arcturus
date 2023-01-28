@@ -3,7 +3,7 @@ import axios from "axios";
 const URL = "https://x8q1cpvc32.execute-api.us-east-1.amazonaws.com/dev";
 
 export class Api {
-  static makeCall = async (endpoint: any, queryData?: any) => {
+  static makeCall = async (endpoint, queryData) => {
     const config = {
       method: "GET",
       url: `${URL}${endpoint}`,

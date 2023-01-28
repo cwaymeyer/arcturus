@@ -1,6 +1,6 @@
 import { Header } from "grommet";
 
-const AppBar = (props: any): any => (
+const AppBar = (props) => (
   <Header
     background="primary"
     pad={{ left: "medium", right: "small", vertical: "small" }}
