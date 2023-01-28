@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Grommet, Heading, Box, Text, Button } from "grommet";
+import { Grommet, Heading, Box, Text, Button, TextInput } from "grommet";
+import { FormSearch } from "grommet-icons";
 import { Api } from "./library/Api";
 import AppBar from "./components/AppBar";
 
@@ -21,7 +22,9 @@ const theme = {
 };
 
 const App = () => {
+  // const [dataLoaded, setDataLoaded]: any = useState(false);
   const [servicesData, setServicesData]: any = useState([]);
+  const [displayedServices, setDisplayedServices]: any = useState([]);
 
   useEffect(() => {
     const getServices = async () => {
@@ -30,6 +33,8 @@ const App = () => {
       if (checkServices) {
         const services = JSON.parse(checkServices);
         setServicesData(services);
+        setDisplayedServices(services);
+        // setDataLoaded(true);
       } else {
         const data: any = await Api.getServices();
 
@@ -38,6 +43,8 @@ const App = () => {
         const parsedServices = JSON.parse(services!);
 
         setServicesData(parsedServices);
+        setDisplayedServices(parsedServices);
+        // setDataLoaded(true);
       }
     };
     getServices();
@@ -51,20 +58,46 @@ const App = () => {
         </AppBar>
         <Heading size="small">Create a new IAM policy</Heading>
         <Box
-          height="large"
+          height="xlarge"
           direction="row"
           gap="small"
           border={{ color: "primary", size: "small" }}
           pad="small"
         >
           <Box
-            pad="large"
+            pad="xsmall"
             border={{ color: "tertiary", size: "small" }}
-            justify="stretch"
             fill="horizontal"
+            align="start"
+            alignContent="start"
+            direction="row"
+            wrap={true}
+            overflow="auto"
           >
-            {servicesData.map((service: any) => (
-              <Button label={service.sk.S} />
+            <TextInput
+              placeholder="Search services..."
+              icon={<FormSearch />}
+              plain={true}
+              size="small"
+              focusIndicator={false}
+              onChange={(e) => {
+                const val = e.target.value.toLowerCase();
+                const filteredServices = servicesData.filter((service: any) => {
+                  const serviceName = service.sk.S.toLowerCase();
+                  return serviceName.includes(val);
+                });
+                setDisplayedServices(filteredServices);
+              }}
+            />
+            {displayedServices.map((service: any) => (
+              <Button
+                color="primary"
+                label={service.sk.S}
+                size="xsmall"
+                fill={false}
+                hoverIndicator={true}
+                margin="xxsmall"
+              />
             ))}
           </Box>
           <Box
