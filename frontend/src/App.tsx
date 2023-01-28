@@ -21,8 +21,17 @@ const theme = {
   },
 };
 
+interface OpenObj {
+  [key: string]: string;
+}
+
+interface ServiceDataResponse extends OpenObj {}
+
+interface ServiceDataState {
+  sk: { S: string };
+}
+
 const App = () => {
-  // const [dataLoaded, setDataLoaded]: any = useState(false);
   const [servicesData, setServicesData]: any = useState([]);
   const [displayedServices, setDisplayedServices]: any = useState([]);
 
@@ -34,7 +43,6 @@ const App = () => {
         const services = JSON.parse(checkServices);
         setServicesData(services);
         setDisplayedServices(services);
-        // setDataLoaded(true);
       } else {
         const data: any = await Api.getServices();
 
@@ -44,11 +52,12 @@ const App = () => {
 
         setServicesData(parsedServices);
         setDisplayedServices(parsedServices);
-        // setDataLoaded(true);
       }
     };
     getServices();
   }, []);
+
+  console.log(servicesData);
 
   if (servicesData.length) {
     return (
