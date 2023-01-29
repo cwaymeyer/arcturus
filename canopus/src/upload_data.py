@@ -31,14 +31,16 @@ def upload_iam_data_to_dynamo(service_data):
         with table.batch_writer(overwrite_by_pkeys=['service', 'sk']) as batch:
             print('💽 uploading ', service['service_name'])
             name = service['service_name'].lower().replace(' ', '_')
+            prefix = service['service_prefix']
 
             for item in service['actions']['rows']:
-                action = item['actions'].upper()
+                action = item['actions']
                 access = item['access_level'].upper()
 
                 action_item_data = {
                     'service': name,
                     'sk': f'ACTION#{access}#{action}',
+                    'prefix': prefix,
                     'description': item['description'],
                     'permission_only': item['permission_only_action'],
                     'resource_types': item['resource_types'],

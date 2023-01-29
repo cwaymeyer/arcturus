@@ -1,27 +1,17 @@
-import { Dynamo } from "../library/Dynamo";
+import { getServices } from "./getServices";
+import { getServiceData } from "./getServiceData";
 
 export const handler = async (event: any, context: any) => {
-  console.log("☄️ entering lambda handler with event:", event);
+  console.log("🚀 entering lambda handler with event:", event);
 
-  const attributeValues = { ":pk": { S: "SERVICE_NAMES" } };
-  const query = "service = :pk";
-  const returnAttributes = "sk";
-
-  const response = await Dynamo.queryTable(
-    attributeValues,
-    query,
-    returnAttributes
-  );
-
-  const returnObj = {
-    statusCode: 200,
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      // "Access-Control-Allow-Credentials": true,
-    },
-    body: JSON.stringify(response),
-  };
-
-  console.log(returnObj);
-  return returnObj;
+  switch (event.path) {
+    case "/services":
+      return await getServices();
+    case "/service-data":
+      const { serviceName } = event.queryStringParameters;
+      return await getServiceData(serviceName);
+    default:
+      console.error("Field name not recognized");
+      return null;
+  }
 };
