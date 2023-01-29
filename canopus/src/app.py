@@ -60,7 +60,7 @@ def handler(event, context):
         obj = { 
             'service_name': service['name'], 
             'service_prefix': service_prefix, 
-            'actions': actions_data 
+            'actions': actions_data
         }
 
         if ('condition_keys_data' in locals()):

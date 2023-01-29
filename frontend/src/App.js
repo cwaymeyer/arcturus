@@ -1,5 +1,14 @@
 import { useState, useEffect } from "react";
-import { Grommet, Heading, Box, Text, Button, TextInput } from "grommet";
+import {
+  Grommet,
+  Heading,
+  Box,
+  Text,
+  Button,
+  TextInput,
+  Accordion,
+  AccordionPanel,
+} from "grommet";
 import { FormSearch } from "grommet-icons";
 import { Api } from "./library/Api";
 import AppBar from "./components/AppBar";
@@ -35,6 +44,7 @@ const App = () => {
         setDisplayedServices(services);
       } else {
         const data = await Api.getServices();
+        console.log(data);
 
         localStorage.setItem("services", JSON.stringify(data.Items));
         const services = localStorage.getItem("services");
@@ -64,47 +74,62 @@ const App = () => {
           <Box
             pad="xsmall"
             border={{ color: "tertiary", size: "small" }}
+            justify="stretch"
             fill="horizontal"
-            align="start"
-            alignContent="start"
-            direction="row"
-            wrap={true}
             overflow="auto"
           >
-            <TextInput
-              placeholder="Search services..."
-              icon={<FormSearch />}
-              plain={true}
-              size="small"
-              focusIndicator={false}
-              onChange={(e) => {
-                const val = e.target.value.toLowerCase();
-                const filteredServices = servicesData.filter((service) => {
-                  const serviceName = service.sk.S.toLowerCase();
-                  return serviceName.includes(val);
-                });
-                setDisplayedServices(filteredServices);
-              }}
-            />
-            {displayedServices.map((service) => (
-              <Button
-                color="primary"
-                label={service.sk.S}
-                size="xsmall"
-                fill={false}
-                hoverIndicator={true}
-                margin="xxsmall"
-              />
-            ))}
+            <Accordion animate={false}>
+              <AccordionPanel label="Services">
+                <Box
+                  justify="stretch"
+                  fill="horizontal"
+                  align="start"
+                  alignContent="start"
+                  direction="row"
+                  wrap={true}
+                  overflow="auto"
+                >
+                  <TextInput
+                    placeholder="Search services..."
+                    icon={<FormSearch />}
+                    plain={true}
+                    size="small"
+                    focusIndicator={false}
+                    onChange={(e) => {
+                      const val = e.target.value.toLowerCase();
+                      const filteredServices = servicesData.filter(
+                        (service) => {
+                          const serviceName = service.sk.S.toLowerCase();
+                          return serviceName.includes(val);
+                        }
+                      );
+                      setDisplayedServices(filteredServices);
+                    }}
+                  />
+                  {displayedServices.map((service) => (
+                    <Button
+                      color="primary"
+                      label={service.sk.S}
+                      size="xsmall"
+                      fill={false}
+                      hoverIndicator={true}
+                      margin="xxsmall"
+                    />
+                  ))}
+                </Box>
+              </AccordionPanel>
+              <AccordionPanel label="Panel 2" color="deep"></AccordionPanel>
+              <AccordionPanel label="Panel 3" color="deep"></AccordionPanel>
+            </Accordion>
           </Box>
           <Box
-            pad="large"
+            pad="xsmall"
             border={{ color: "tertiary", size: "small" }}
             justify="stretch"
             fill="horizontal"
           />
           <Box
-            pad="large"
+            pad="xsmall"
             border={{ color: "tertiary", size: "small" }}
             justify="stretch"
             fill="horizontal"

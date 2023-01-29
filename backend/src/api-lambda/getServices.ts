@@ -13,5 +13,13 @@ export const getServices = async () => {
     returnAttributes
   );
 
-  return JSON.stringify(response);
+  const returnObj = {
+    statusCode: 200,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+    },
+    body: JSON.stringify(response),
+  };
+
+  return returnObj;
 };
