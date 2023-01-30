@@ -31,8 +31,9 @@ const theme = {
 };
 
 const App = () => {
-  const [servicesData, setServicesData] = useState([]);
-  const [displayedServices, setDisplayedServices] = useState([]);
+  const [servicesData, setServicesData] = useState([]); // all services, unchanging directly from Canopus table
+  const [displayedServices, setDisplayedServices] = useState([]); // displayed services, changes based on user search (subset of servicesData)
+  const [currentAccordion, setCurrentAccordion] = useState(0); // current open accordion by index (null = none)
 
   useEffect(() => {
     const getServices = async () => {
@@ -57,6 +58,19 @@ const App = () => {
     getServices();
   }, []);
 
+  const handleServiceSearch = (searchValue) => {
+    const filteredServices = servicesData.filter((service) => {
+      const serviceName = service.sk.S.toLowerCase();
+      return serviceName.includes(searchValue);
+    });
+    setDisplayedServices(filteredServices);
+  };
+
+  const handleServiceSelection = async (service) => {
+    const serviceData = await Api.getServiceActionsData(service);
+    console.log(serviceData);
+  };
+
   if (servicesData.length) {
     return (
       <Grommet theme={theme}>
@@ -78,8 +92,8 @@ const App = () => {
             fill="horizontal"
             overflow="auto"
           >
-            <Accordion animate={false}>
-              <AccordionPanel label="Services">
+            <Accordion animate={false} activeIndex={currentAccordion}>
+              <AccordionPanel label="Select Service">
                 <Box
                   justify="stretch"
                   fill="horizontal"
@@ -95,16 +109,9 @@ const App = () => {
                     plain={true}
                     size="small"
                     focusIndicator={false}
-                    onChange={(e) => {
-                      const val = e.target.value.toLowerCase();
-                      const filteredServices = servicesData.filter(
-                        (service) => {
-                          const serviceName = service.sk.S.toLowerCase();
-                          return serviceName.includes(val);
-                        }
-                      );
-                      setDisplayedServices(filteredServices);
-                    }}
+                    onChange={(e) =>
+                      handleServiceSearch(e.target.value.toLowerCase())
+                    }
                   />
                   {displayedServices.map((service) => (
                     <Button
@@ -114,11 +121,22 @@ const App = () => {
                       fill={false}
                       hoverIndicator={true}
                       margin="xxsmall"
+                      value={service.sk.S}
+                      onClick={async (e) => {
+                        const snakeValue = e.target.value
+                          .toLowerCase()
+                          .split(" ")
+                          .join("_");
+                        await handleServiceSelection(snakeValue);
+                      }}
                     />
                   ))}
                 </Box>
               </AccordionPanel>
-              <AccordionPanel label="Panel 2" color="deep"></AccordionPanel>
+              <AccordionPanel
+                label="Select Actions"
+                color="deep"
+              ></AccordionPanel>
               <AccordionPanel label="Panel 3" color="deep"></AccordionPanel>
             </Accordion>
           </Box>

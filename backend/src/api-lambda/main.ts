@@ -1,5 +1,5 @@
 import { getServices } from "./getServices";
-import { getServiceData } from "./getServiceData";
+import { getServiceActionsData } from "./getServiceActionsData";
 
 export const handler = async (event: any, context: any) => {
   console.log("🚀 entering lambda handler with event:", event);
@@ -7,9 +7,9 @@ export const handler = async (event: any, context: any) => {
   switch (event.path) {
     case "/services":
       return await getServices();
-    case "/service-data":
+    case "/service-actions-data":
       const { serviceName } = event.queryStringParameters;
-      return await getServiceData(serviceName);
+      return await getServiceActionsData(serviceName);
     default:
       console.error("Field name not recognized");
       return null;

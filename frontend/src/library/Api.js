@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const URL = "https://x8q1cpvc32.execute-api.us-east-1.amazonaws.com/dev";
+const URL = "https://9u2cv827ni.execute-api.us-east-1.amazonaws.com/dev";
 
 export class Api {
   static makeCall = async (endpoint, queryData) => {
@@ -8,7 +8,6 @@ export class Api {
       method: "GET",
       url: `${URL}${endpoint}`,
       params: queryData,
-      // headers: { "Access-Control-Allow-Origin": "*" },
     };
 
     try {
@@ -24,6 +23,24 @@ export class Api {
     console.log("📞 frontend getServices");
 
     const response = await this.makeCall("/services");
+    return response;
+  };
+
+  // static getServiceData = async (serviceName) => {
+  //   console.log("📞 frontend getServiceData");
+
+  //   const params = { serviceName: serviceName };
+
+  //   const response = await this.makeCall("/service-data", params);
+  //   return response;
+  // };
+
+  static getServiceActionsData = async (serviceName) => {
+    console.log("📞 frontend getServiceData");
+
+    const params = { serviceName: serviceName };
+
+    const response = await this.makeCall("/service-actions-data", params);
     return response;
   };
 }
