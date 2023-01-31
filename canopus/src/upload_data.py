@@ -35,12 +35,14 @@ def upload_iam_data_to_dynamo(service_data):
 
             for item in service['actions']['rows']:
                 action = item['actions']
-                access = item['access_level'].upper()
+                access = item['access_level']
 
                 action_item_data = {
                     'service': name,
-                    'sk': f'ACTION#{access}#{action}',
+                    'sk': 'ACTION',
                     'prefix': prefix,
+                    'access': access,
+                    'action': action,
                     'description': item['description'],
                     'permission_only': item['permission_only_action'],
                     'resource_types': item['resource_types'],
@@ -52,11 +54,12 @@ def upload_iam_data_to_dynamo(service_data):
 
             if service['resource_types']:
                 for item in service['resource_types']['rows']:
-                    resource = item['resource_types'].upper()
+                    resource = item['resource_types']
 
                     resource_item_data = {
                         'service': name,
-                        'sk': f'RESOURCE#{action}',
+                        'sk': 'RESOURCE',
+                        'resource': resource,
                         'arn': item['arn'],
                         'condition_keys': item['condition_keys']
                     }
@@ -69,7 +72,8 @@ def upload_iam_data_to_dynamo(service_data):
 
                     condition_item_data = {
                         'service': name,
-                        'sk': f'CONDITION#{condition}',
+                        'sk': 'CONDITION',
+                        'condition': condition,
                         'description': item['description'],
                         'type': item['type']
                     }

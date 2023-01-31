@@ -8,6 +8,7 @@ import {
   TextInput,
   Accordion,
   AccordionPanel,
+  Spinner,
 } from "grommet";
 import { FormSearch } from "grommet-icons";
 import { Api } from "./library/Api";
@@ -34,6 +35,8 @@ const App = () => {
   const [servicesData, setServicesData] = useState([]); // all services, unchanging directly from Canopus table
   const [displayedServices, setDisplayedServices] = useState([]); // displayed services, changes based on user search (subset of servicesData)
   const [currentAccordion, setCurrentAccordion] = useState(0); // current open accordion by index (null = none)
+  const [actionsData, setActionsData] = useState([]); // displayed services, changes based on user search (subset of servicesData)
+  const [currentStatement, setCurrentStatement] = useState({}); // current IAM policy statement in editing
 
   useEffect(() => {
     const getServices = async () => {
@@ -58,6 +61,13 @@ const App = () => {
     getServices();
   }, []);
 
+  // clear all local storage but services on page close
+  window.onunload = () => {
+    const services = localStorage.getItem("services");
+    localStorage.clear();
+    localStorage.setItem("services", services);
+  };
+
   const handleServiceSearch = (searchValue) => {
     const filteredServices = servicesData.filter((service) => {
       const serviceName = service.sk.S.toLowerCase();
@@ -66,9 +76,23 @@ const App = () => {
     setDisplayedServices(filteredServices);
   };
 
+  // get a service's actions data
   const handleServiceSelection = async (service) => {
-    const serviceData = await Api.getServiceActionsData(service);
-    console.log(serviceData);
+    setCurrentAccordion(1);
+    const checkActions = localStorage.getItem(`${service}-actions`);
+    if (checkActions) {
+      const actions = JSON.parse(checkActions);
+      setActionsData(actions);
+    } else {
+      const data = await Api.getServiceActionsData(service);
+      console.log(data);
+
+      localStorage.setItem(`${service}-actions`, JSON.stringify(data.Items));
+      const actions = localStorage.getItem(`${service}-actions`);
+      const parsedActions = JSON.parse(actions);
+
+      setActionsData(parsedActions);
+    }
   };
 
   if (servicesData.length) {
@@ -77,7 +101,9 @@ const App = () => {
         <AppBar color="primary">
           <Text size="large">IAM Generator</Text>
         </AppBar>
-        <Heading size="small">Create a new IAM policy</Heading>
+        <Heading level={1} size="small">
+          Create a new IAM policy
+        </Heading>
         <Box
           height="xlarge"
           direction="row"
@@ -133,10 +159,27 @@ const App = () => {
                   ))}
                 </Box>
               </AccordionPanel>
-              <AccordionPanel
-                label="Select Actions"
-                color="deep"
-              ></AccordionPanel>
+              <AccordionPanel label="Select Actions" color="deep">
+                <Box
+                  justify="stretch"
+                  fill="horizontal"
+                  align="start"
+                  alignContent="start"
+                  direction="row"
+                  wrap={true}
+                  overflow="auto"
+                >
+                  {() => {
+                    if (actionsData.length) {
+                      <Heading level={3} size="xxsmall">
+                        Read
+                      </Heading>;
+                    } else {
+                      <Spinner />;
+                    }
+                  }}
+                </Box>
+              </AccordionPanel>
               <AccordionPanel label="Panel 3" color="deep"></AccordionPanel>
             </Accordion>
           </Box>

@@ -5,9 +5,9 @@ export const getServiceActionsData = async (serviceName: string) => {
 
   const attributeValues = {
     ":pk": { S: serviceName },
-    ":sk": { S: "ACTION#*" },
+    ":sk": { S: "ACTION" },
   };
-  const query = "service = :pk AND begins_with(sk, :sk)";
+  const query = "service = :pk AND sk = :sk";
 
   const response = await Dynamo.queryTable(attributeValues, query);
 

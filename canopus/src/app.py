@@ -72,5 +72,3 @@ def handler(event, context):
     upload_iam_data_to_dynamo(data)
 
     return data
-
-handler({}, {})
