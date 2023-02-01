@@ -36,6 +36,7 @@ export class CanopusStack extends Stack {
       this,
       "Canopus_TaskDefinition",
       {
+        memoryLimitMiB: 2048,
         cpu: 1024,
       }
     );
