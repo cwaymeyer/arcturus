@@ -34,7 +34,10 @@ export class CanopusStack extends Stack {
 
     const taskDefinition = new ecs.FargateTaskDefinition(
       this,
-      "Canopus_TaskDefinition"
+      "Canopus_TaskDefinition",
+      {
+        cpu: 1024,
+      }
     );
 
     taskDefinition.addContainer("Canopus_Container", {
