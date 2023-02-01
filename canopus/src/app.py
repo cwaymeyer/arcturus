@@ -57,6 +57,10 @@ def handler():
         actions_table = tables[0]
         actions_data = scrape_actions(actions_table, resource_types, condition_keys)
 
+        console.log('🐨', condition_keys_data)
+        console.log('💡', resource_types_data)
+        console.log('🧢', actions_data)
+
         obj = { 
             'service_name': service['name'], 
             'service_prefix': service_prefix, 
@@ -68,6 +72,8 @@ def handler():
         if ('resource_types_data' in locals()):
             obj['resource_types'] = resource_types_data
         data.append(obj)
+
+        console.log('🦗', data)
 
     upload_iam_data_to_dynamo(data)
 
