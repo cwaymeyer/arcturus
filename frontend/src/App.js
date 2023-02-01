@@ -36,7 +36,7 @@ const App = () => {
   const [displayedServices, setDisplayedServices] = useState([]); // displayed services, changes based on user search (subset of servicesData)
   const [currentAccordion, setCurrentAccordion] = useState(0); // current open accordion by index (null = none)
   const [actionsData, setActionsData] = useState([]); // displayed services, changes based on user search (subset of servicesData)
-  const [currentStatement, setCurrentStatement] = useState({}); // current IAM policy statement in editing
+  // const [currentStatement, setCurrentStatement] = useState({}); // current IAM policy statement in editing
 
   useEffect(() => {
     const getServices = async () => {
