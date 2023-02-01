@@ -4,7 +4,7 @@ export const getServices = async () => {
   console.log("☄️ Get Services ☄️");
 
   const attributeValues = { ":pk": { S: "SERVICE_NAMES" } };
-  const query = "service = :pk";
+  const query = "pk = :pk";
   const returnAttributes = "sk";
 
   const response = await Dynamo.queryTable(
