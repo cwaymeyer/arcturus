@@ -43,7 +43,7 @@ jobs:
           sudo npm i -g aws-cdk@2.61.0
           npm ci
           npm run build
-          cdk deploy CanopusStack --require-approval=never
+          cdk deploy Canopus --require-approval=never
 
       - name: Login to ECR
         uses: aws-actions/amazon-ecr-login@v1
