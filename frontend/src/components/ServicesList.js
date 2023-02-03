@@ -1,4 +1,4 @@
-import { Box, Button, TextInput } from "grommet";
+import { Box, Button, TextInput, Spinner } from "grommet";
 import { Api } from "../library/Api";
 import { FormSearch } from "grommet-icons";
 
@@ -52,44 +52,48 @@ const ServicesList = ({
     }
   };
 
-  return (
-    <Box
-      justify="stretch"
-      fill="horizontal"
-      align="start"
-      alignContent="start"
-      direction="row"
-      wrap={true}
-      overflow="auto"
-    >
-      <TextInput
-        placeholder="Search services..."
-        icon={<FormSearch />}
-        plain={true}
-        size="small"
-        focusIndicator={false}
-        onChange={(e) => handleServiceSearch(e.target.value.toLowerCase())}
-      />
-      {displayedServices.map((service) => (
-        <Button
-          color="primary"
-          label={service.sk.S}
+  if (servicesData.length) {
+    return (
+      <Box
+        justify="stretch"
+        fill="horizontal"
+        align="start"
+        alignContent="start"
+        direction="row"
+        wrap={true}
+        overflow="auto"
+      >
+        <TextInput
+          placeholder="Search services..."
+          icon={<FormSearch />}
+          plain={true}
           size="small"
-          fill={false}
-          hoverIndicator={true}
-          margin="xxsmall"
-          value={service.sk.S}
-          onClick={async (e) => {
-            const snakeValue = e.target.value
-              .toLowerCase()
-              .split(" ")
-              .join("_");
-            await handleServiceSelection(snakeValue);
-          }}
+          focusIndicator={false}
+          onChange={(e) => handleServiceSearch(e.target.value.toLowerCase())}
         />
-      ))}
-    </Box>
-  );
+        {displayedServices.map((service) => (
+          <Button
+            color="primary"
+            label={service.sk.S}
+            size="small"
+            fill={false}
+            hoverIndicator={true}
+            margin="xxsmall"
+            value={service.sk.S}
+            onClick={async (e) => {
+              const snakeValue = e.target.value
+                .toLowerCase()
+                .split(" ")
+                .join("_");
+              await handleServiceSelection(snakeValue);
+            }}
+          />
+        ))}
+      </Box>
+    );
+  } else {
+    return <Spinner margin="medium" />;
+  }
 };
 
 export default ServicesList;

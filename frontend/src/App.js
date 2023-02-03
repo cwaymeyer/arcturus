@@ -59,64 +59,60 @@ const App = () => {
     localStorage.setItem("services", services);
   };
 
-  if (servicesData.length) {
-    return (
-      <Grommet theme={theme}>
-        <AppBar color="primary">
-          <Text size="xxlarge" margin="xsmall" weight="bold">
-            IAM Generator
-            <Text size="large" weight="normal" margin={{ left: "medium" }}>
-              Create AWS IAM policies
-            </Text>
+  return (
+    <Grommet theme={theme}>
+      <AppBar color="primary">
+        <Text size="xxlarge" margin="xsmall" weight="bold">
+          IAM Generator
+          <Text size="large" weight="normal" margin={{ left: "medium" }}>
+            Create AWS IAM policies
           </Text>
-        </AppBar>
+        </Text>
+      </AppBar>
+      <Box
+        height="xlarge"
+        direction="row"
+        margin={{ top: "small", bottom: "small" }}
+        gap="small"
+      >
         <Box
-          height="xlarge"
-          direction="row"
-          margin={{ top: "small", bottom: "small" }}
-          gap="small"
+          pad="xsmall"
+          border={{ color: "tertiary", size: "small" }}
+          justify="stretch"
+          fill="horizontal"
+          overflow="auto"
         >
-          <Box
-            pad="xsmall"
-            border={{ color: "tertiary", size: "small" }}
-            justify="stretch"
-            fill="horizontal"
-            overflow="auto"
-          >
-            <Accordion animate={false} activeIndex={currentAccordion}>
-              <AccordionPanel label="Select Service">
-                <ServicesList
-                  servicesData={servicesData}
-                  displayedServices={displayedServices}
-                  setDisplayedServices={setDisplayedServices}
-                  setActionsData={setActionsData}
-                  setCurrentAccordion={setCurrentAccordion}
-                />
-              </AccordionPanel>
-              <AccordionPanel label="Select Actions">
-                <ActionsList actionsData={actionsData} />
-              </AccordionPanel>
-              <AccordionPanel label="Panel 3" color="deep"></AccordionPanel>
-            </Accordion>
-          </Box>
-          <Box
-            pad="xsmall"
-            border={{ color: "tertiary", size: "small" }}
-            justify="stretch"
-            fill="horizontal"
-          />
-          <Box
-            pad="xsmall"
-            border={{ color: "tertiary", size: "small" }}
-            justify="stretch"
-            fill="horizontal"
-          />
+          <Accordion animate={false} activeIndex={currentAccordion}>
+            <AccordionPanel label="Select Service">
+              <ServicesList
+                servicesData={servicesData}
+                displayedServices={displayedServices}
+                setDisplayedServices={setDisplayedServices}
+                setActionsData={setActionsData}
+                setCurrentAccordion={setCurrentAccordion}
+              />
+            </AccordionPanel>
+            <AccordionPanel label="Select Actions">
+              <ActionsList actionsData={actionsData} />
+            </AccordionPanel>
+            <AccordionPanel label="Panel 3" color="deep"></AccordionPanel>
+          </Accordion>
         </Box>
-      </Grommet>
-    );
-  } else {
-    return <Text size="large">Loading...</Text>;
-  }
+        <Box
+          pad="xsmall"
+          border={{ color: "tertiary", size: "small" }}
+          justify="stretch"
+          fill="horizontal"
+        />
+        <Box
+          pad="xsmall"
+          border={{ color: "tertiary", size: "small" }}
+          justify="stretch"
+          fill="horizontal"
+        />
+      </Box>
+    </Grommet>
+  );
 };
 
 export default App;
