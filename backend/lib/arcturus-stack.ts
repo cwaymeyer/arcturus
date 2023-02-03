@@ -4,7 +4,7 @@ import {
   aws_s3 as s3,
   aws_cloudfront as cloudfront,
   aws_s3_deployment as s3_deployment,
-  aws_certificatemanager as certificatemanager,
+  // aws_certificatemanager as certificatemanager,
   aws_iam as iam,
   RemovalPolicy,
   aws_cloudfront_origins,
@@ -12,7 +12,7 @@ import {
 } from "aws-cdk-lib";
 import { Construct } from "constructs";
 
-const domainName = "iamgenerator.com";
+// const domainName = "iamgenerator.com";
 // const certificate = "";
 
 export class ArcturusStack extends Stack {
@@ -76,7 +76,7 @@ export class ArcturusStack extends Stack {
     );
 
     new s3_deployment.BucketDeployment(this, "arcturus-deployment", {
-      sources: [s3_deployment.Source.asset("../frontend")],
+      sources: [s3_deployment.Source.asset("../frontend/build")],
       destinationBucket: bucket,
       distribution,
       distributionPaths: ["/*"],

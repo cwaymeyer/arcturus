@@ -12,7 +12,7 @@ def get_html(url):
     return response.text
 
 
-def handler(event, context):
+def handler():
     '''🛰️ Get tabled IAM data for all AWS services 🛰️'''
 
     all_services = get_aws_services()
@@ -23,7 +23,7 @@ def handler(event, context):
 
         # put service name in dynamo under 'SERVICE_NAMES' pk for quick access
         service_name = {
-            'service': 'SERVICE_NAMES',
+            'pk': 'SERVICE_NAMES',
             'sk': service['name'],
         }
 
@@ -73,4 +73,4 @@ def handler(event, context):
 
     return data
 
-handler({}, {})
+handler()

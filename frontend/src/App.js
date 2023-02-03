@@ -1,17 +1,9 @@
 import { useState, useEffect } from "react";
-import {
-  Grommet,
-  Heading,
-  Box,
-  Text,
-  Button,
-  TextInput,
-  Accordion,
-  AccordionPanel,
-} from "grommet";
-import { FormSearch } from "grommet-icons";
+import { Grommet, Box, Text, Accordion, AccordionPanel } from "grommet";
 import { Api } from "./library/Api";
 import AppBar from "./components/AppBar";
+import ServicesList from "./components/ServicesList";
+import ActionsList from "./components/ActionsList";
 
 const theme = {
   global: {
@@ -31,8 +23,11 @@ const theme = {
 };
 
 const App = () => {
-  const [servicesData, setServicesData] = useState([]);
-  const [displayedServices, setDisplayedServices] = useState([]);
+  const [servicesData, setServicesData] = useState([]); // all services, unchanging directly from Canopus table
+  const [displayedServices, setDisplayedServices] = useState([]); // displayed services, changes based on user search (subset of servicesData)
+  const [currentAccordion, setCurrentAccordion] = useState(0); // current open accordion by index (null = none)
+  const [actionsData, setActionsData] = useState([]); // all actions from selected service
+  // const [currentStatement, setCurrentStatement] = useState({}); // current IAM policy statement in editing
 
   useEffect(() => {
     const getServices = async () => {
@@ -57,19 +52,29 @@ const App = () => {
     getServices();
   }, []);
 
+  // clear all local storage but services on page close
+  window.onunload = () => {
+    const services = localStorage.getItem("services");
+    localStorage.clear();
+    localStorage.setItem("services", services);
+  };
+
   if (servicesData.length) {
     return (
       <Grommet theme={theme}>
         <AppBar color="primary">
-          <Text size="large">IAM Generator</Text>
+          <Text size="xxlarge" margin="xsmall" weight="bold">
+            IAM Generator
+            <Text size="large" weight="normal" margin={{ left: "medium" }}>
+              Create AWS IAM policies
+            </Text>
+          </Text>
         </AppBar>
-        <Heading size="small">Create a new IAM policy</Heading>
         <Box
           height="xlarge"
           direction="row"
+          margin={{ top: "small", bottom: "small" }}
           gap="small"
-          border={{ color: "primary", size: "small" }}
-          pad="small"
         >
           <Box
             pad="xsmall"
@@ -78,47 +83,19 @@ const App = () => {
             fill="horizontal"
             overflow="auto"
           >
-            <Accordion animate={false}>
-              <AccordionPanel label="Services">
-                <Box
-                  justify="stretch"
-                  fill="horizontal"
-                  align="start"
-                  alignContent="start"
-                  direction="row"
-                  wrap={true}
-                  overflow="auto"
-                >
-                  <TextInput
-                    placeholder="Search services..."
-                    icon={<FormSearch />}
-                    plain={true}
-                    size="small"
-                    focusIndicator={false}
-                    onChange={(e) => {
-                      const val = e.target.value.toLowerCase();
-                      const filteredServices = servicesData.filter(
-                        (service) => {
-                          const serviceName = service.sk.S.toLowerCase();
-                          return serviceName.includes(val);
-                        }
-                      );
-                      setDisplayedServices(filteredServices);
-                    }}
-                  />
-                  {displayedServices.map((service) => (
-                    <Button
-                      color="primary"
-                      label={service.sk.S}
-                      size="xsmall"
-                      fill={false}
-                      hoverIndicator={true}
-                      margin="xxsmall"
-                    />
-                  ))}
-                </Box>
+            <Accordion animate={false} activeIndex={currentAccordion}>
+              <AccordionPanel label="Select Service">
+                <ServicesList
+                  servicesData={servicesData}
+                  displayedServices={displayedServices}
+                  setDisplayedServices={setDisplayedServices}
+                  setActionsData={setActionsData}
+                  setCurrentAccordion={setCurrentAccordion}
+                />
               </AccordionPanel>
-              <AccordionPanel label="Panel 2" color="deep"></AccordionPanel>
+              <AccordionPanel label="Select Actions">
+                <ActionsList actionsData={actionsData} />
+              </AccordionPanel>
               <AccordionPanel label="Panel 3" color="deep"></AccordionPanel>
             </Accordion>
           </Box>

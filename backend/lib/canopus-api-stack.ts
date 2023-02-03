@@ -31,6 +31,8 @@ export class CanopusApiStack extends Stack {
     const lambdaPolicy = new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: [
+        "dynamodb:Query",
+        "dynamodb:Scan",
         "dynamodb:GetItem",
         "dynamodb:BatchGetItem",
         "dynamodb:ConditionCheckItem",
@@ -98,7 +100,7 @@ export class CanopusApiStack extends Stack {
     const servicesResource = api.root.addResource("services");
     servicesResource.addMethod("GET");
 
-    const serviceDataResource = api.root.addResource("service-data");
+    const serviceDataResource = api.root.addResource("service-actions-data");
     serviceDataResource.addMethod("GET");
   };
 }

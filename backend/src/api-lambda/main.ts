@@ -7,9 +7,9 @@ export const handler = async (event: any, context: any) => {
   switch (event.path) {
     case "/services":
       return await getServices();
-    case "/service-data":
-      const { serviceName } = event.queryStringParameters;
-      return await getServiceData(serviceName);
+    case "/service-actions-data":
+      const { serviceName, category } = event.queryStringParameters;
+      return await getServiceData(serviceName, category);
     default:
       console.error("Field name not recognized");
       return null;

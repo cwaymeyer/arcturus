@@ -21,7 +21,7 @@ export class CanopusStack extends Stack {
   createDynamoTable = () => {
     const table = new dynamodb.Table(this, "Canopus_Data", {
       tableName: "Canopus_Data",
-      partitionKey: { name: "service", type: dynamodb.AttributeType.STRING },
+      partitionKey: { name: "pk", type: dynamodb.AttributeType.STRING },
       sortKey: { name: "sk", type: dynamodb.AttributeType.STRING },
       removalPolicy: RemovalPolicy.DESTROY,
     });
@@ -34,7 +34,11 @@ export class CanopusStack extends Stack {
 
     const taskDefinition = new ecs.FargateTaskDefinition(
       this,
-      "Canopus_TaskDefinition"
+      "Canopus_TaskDefinition",
+      {
+        memoryLimitMiB: 2048,
+        cpu: 1024,
+      }
     );
 
     taskDefinition.addContainer("Canopus_Container", {
