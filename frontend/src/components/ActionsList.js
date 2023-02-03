@@ -79,7 +79,7 @@ const ActionsList = ({ actionsData }) => {
       </Box>
     );
   } else {
-    return <Spinner />;
+    return <Spinner margin="medium" />;
   }
 };
 
