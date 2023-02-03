@@ -1,17 +1,8 @@
 import { useState, useEffect } from "react";
-import {
-  Grommet,
-  Heading,
-  Box,
-  Text,
-  Button,
-  TextInput,
-  Accordion,
-  AccordionPanel,
-} from "grommet";
-import { FormSearch } from "grommet-icons";
+import { Grommet, Box, Text, Accordion, AccordionPanel } from "grommet";
 import { Api } from "./library/Api";
 import AppBar from "./components/AppBar";
+import ServicesList from "./components/ServicesList";
 import ActionsList from "./components/ActionsList";
 
 const theme = {
@@ -35,7 +26,7 @@ const App = () => {
   const [servicesData, setServicesData] = useState([]); // all services, unchanging directly from Canopus table
   const [displayedServices, setDisplayedServices] = useState([]); // displayed services, changes based on user search (subset of servicesData)
   const [currentAccordion, setCurrentAccordion] = useState(0); // current open accordion by index (null = none)
-  const [actionsData, setActionsData] = useState([]); // displayed services, changes based on user search (subset of servicesData)
+  const [actionsData, setActionsData] = useState([]); // all actions from selected service
   // const [currentStatement, setCurrentStatement] = useState({}); // current IAM policy statement in editing
 
   useEffect(() => {
@@ -68,62 +59,22 @@ const App = () => {
     localStorage.setItem("services", services);
   };
 
-  const handleServiceSearch = (searchValue) => {
-    const filteredServices = servicesData.filter((service) => {
-      const serviceName = service.sk.S.toLowerCase();
-      return serviceName.includes(searchValue);
-    });
-    setDisplayedServices(filteredServices);
-  };
-
-  // get a service's actions data
-  const handleServiceSelection = async (service) => {
-    setCurrentAccordion(1);
-    const checkActions = localStorage.getItem(`${service}-actions`);
-    if (checkActions) {
-      const actions = JSON.parse(checkActions);
-      setActionsData(actions);
-    } else {
-      const data = await Api.getServiceData(service, "ACTION");
-      console.log(data);
-
-      localStorage.setItem(`${service}-actions`, JSON.stringify(data.Items));
-      const actions = localStorage.getItem(`${service}-actions`);
-      const parsedActions = JSON.parse(actions);
-
-      // set object for actions state
-
-      let actionsObject = {};
-      parsedActions.forEach((action) => {
-        const actionObj = {
-          name: action.action.S,
-          description: action.description.S,
-        };
-        if (!actionsObject[action.access.S]) {
-          actionsObject[action.access.S] = [];
-        }
-        actionsObject[action.access.S].push(actionObj);
-      });
-
-      setActionsData(actionsObject);
-    }
-  };
-
   if (servicesData.length) {
     return (
       <Grommet theme={theme}>
         <AppBar color="primary">
-          <Text size="large">IAM Generator</Text>
+          <Text size="xxlarge" margin="xsmall" weight="bold">
+            IAM Generator
+            <Text size="large" weight="normal" margin={{ left: "medium" }}>
+              Create AWS IAM policies
+            </Text>
+          </Text>
         </AppBar>
-        <Heading level={1} size="small">
-          Create a new IAM policy
-        </Heading>
         <Box
           height="xlarge"
           direction="row"
+          margin={{ top: "small", bottom: "small" }}
           gap="small"
-          border={{ color: "primary", size: "small" }}
-          pad="small"
         >
           <Box
             pad="xsmall"
@@ -134,44 +85,13 @@ const App = () => {
           >
             <Accordion animate={false} activeIndex={currentAccordion}>
               <AccordionPanel label="Select Service">
-                <Box
-                  justify="stretch"
-                  fill="horizontal"
-                  align="start"
-                  alignContent="start"
-                  direction="row"
-                  wrap={true}
-                  overflow="auto"
-                >
-                  <TextInput
-                    placeholder="Search services..."
-                    icon={<FormSearch />}
-                    plain={true}
-                    size="small"
-                    focusIndicator={false}
-                    onChange={(e) =>
-                      handleServiceSearch(e.target.value.toLowerCase())
-                    }
-                  />
-                  {displayedServices.map((service) => (
-                    <Button
-                      color="primary"
-                      label={service.sk.S}
-                      size="small"
-                      fill={false}
-                      hoverIndicator={true}
-                      margin="xxsmall"
-                      value={service.sk.S}
-                      onClick={async (e) => {
-                        const snakeValue = e.target.value
-                          .toLowerCase()
-                          .split(" ")
-                          .join("_");
-                        await handleServiceSelection(snakeValue);
-                      }}
-                    />
-                  ))}
-                </Box>
+                <ServicesList
+                  servicesData={servicesData}
+                  displayedServices={displayedServices}
+                  setDisplayedServices={setDisplayedServices}
+                  setActionsData={setActionsData}
+                  setCurrentAccordion={setCurrentAccordion}
+                />
               </AccordionPanel>
               <AccordionPanel label="Select Actions">
                 <ActionsList actionsData={actionsData} />
