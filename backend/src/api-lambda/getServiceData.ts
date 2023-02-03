@@ -5,7 +5,7 @@ export const getServiceData = async (serviceName: string, category: string) => {
 
   const attributeValues = {
     ":pk": { S: serviceName },
-    ":sk": { S: category.toUpperCase() },
+    ":sk": { S: category },
   };
   const query = "pk = :pk AND begins_with(sk, :sk)";
 

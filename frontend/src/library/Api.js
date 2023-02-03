@@ -35,10 +35,10 @@ export class Api {
   //   return response;
   // };
 
-  static getServiceActionsData = async (serviceName) => {
+  static getServiceData = async (serviceName, category) => {
     console.log("📞 frontend getServiceData");
 
-    const params = { serviceName: serviceName };
+    const params = { serviceName: serviceName, category: category };
 
     const response = await this.makeCall("/service-actions-data", params);
     return response;

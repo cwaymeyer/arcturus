@@ -8,11 +8,11 @@ import {
   TextInput,
   Accordion,
   AccordionPanel,
-  Spinner,
 } from "grommet";
 import { FormSearch } from "grommet-icons";
 import { Api } from "./library/Api";
 import AppBar from "./components/AppBar";
+import ActionsList from "./components/ActionsList";
 
 const theme = {
   global: {
@@ -84,14 +84,28 @@ const App = () => {
       const actions = JSON.parse(checkActions);
       setActionsData(actions);
     } else {
-      const data = await Api.getServiceActionsData(service);
+      const data = await Api.getServiceData(service, "ACTION");
       console.log(data);
 
       localStorage.setItem(`${service}-actions`, JSON.stringify(data.Items));
       const actions = localStorage.getItem(`${service}-actions`);
       const parsedActions = JSON.parse(actions);
 
-      setActionsData(parsedActions);
+      // set object for actions state
+
+      let actionsObject = {};
+      parsedActions.forEach((action) => {
+        const actionObj = {
+          name: action.action.S,
+          description: action.description.S,
+        };
+        if (!actionsObject[action.access.S]) {
+          actionsObject[action.access.S] = [];
+        }
+        actionsObject[action.access.S].push(actionObj);
+      });
+
+      setActionsData(actionsObject);
     }
   };
 
@@ -143,7 +157,7 @@ const App = () => {
                     <Button
                       color="primary"
                       label={service.sk.S}
-                      size="xsmall"
+                      size="small"
                       fill={false}
                       hoverIndicator={true}
                       margin="xxsmall"
@@ -159,26 +173,8 @@ const App = () => {
                   ))}
                 </Box>
               </AccordionPanel>
-              <AccordionPanel label="Select Actions" color="deep">
-                <Box
-                  justify="stretch"
-                  fill="horizontal"
-                  align="start"
-                  alignContent="start"
-                  direction="row"
-                  wrap={true}
-                  overflow="auto"
-                >
-                  {() => {
-                    if (actionsData.length) {
-                      <Heading level={3} size="xxsmall">
-                        Read
-                      </Heading>;
-                    } else {
-                      <Spinner />;
-                    }
-                  }}
-                </Box>
+              <AccordionPanel label="Select Actions">
+                <ActionsList actionsData={actionsData} />
               </AccordionPanel>
               <AccordionPanel label="Panel 3" color="deep"></AccordionPanel>
             </Accordion>
