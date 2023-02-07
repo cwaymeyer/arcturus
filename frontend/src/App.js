@@ -23,10 +23,10 @@ const App = () => {
     actions: {},
   };
 
-  const initialPolicyStatement = {
-    Version: "2012-10-17",
-    Statement: [],
-  };
+  // const initialPolicyStatement = {
+  //   Version: "2012-10-17",
+  //   Statement: [],
+  // };
 
   const [servicesData, setServicesData] = useState([]); // all services, unchanging directly from Canopus table
   const [displayedServices, setDisplayedServices] = useState([]); // displayed services, changes based on user search (subset of servicesData)

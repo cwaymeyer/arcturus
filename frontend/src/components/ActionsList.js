@@ -9,8 +9,6 @@ const ActionsList = ({
 }) => {
   const handleActionSelection = (action) => {
     console.log(action);
-    console.log("DATA");
-    console.log(actionsData);
 
     // get access level of selected action
     let accessLevel;
