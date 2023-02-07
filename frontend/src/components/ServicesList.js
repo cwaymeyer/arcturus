@@ -1,7 +1,7 @@
 import { Box, Button, TextInput, Spinner } from "grommet";
 import { Api } from "../library/Api";
 import { FormSearch } from "grommet-icons";
-import { findRepeatedWords } from "../library/utils";
+// import { findRepeatedWords } from "../library/utils";
 
 const ServicesList = ({
   servicesData,

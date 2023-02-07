@@ -21,8 +21,6 @@ const App = () => {
     serviceValue: "",
     access: "",
     actions: {},
-    actionCategories: [],
-    actions: [],
   };
 
   const initialPolicyStatement = {
@@ -35,9 +33,9 @@ const App = () => {
   const [currentAccordion, setCurrentAccordion] = useState(0); // current open accordion by index (null = none)
   const [actionsData, setActionsData] = useState([]); // all actions from selected service
   const [statementStage, setStatementStage] = useState(initialStatementStage); // object containing current policy data
-  const [currentStatement, setCurrentStatement] = useState(
-    initialPolicyStatement
-  ); // exact current staged IAM policy statement
+  // const [currentStatement, setCurrentStatement] = useState(
+  //   initialPolicyStatement
+  // ); // exact current staged IAM policy statement
 
   useEffect(() => {
     const getServices = async () => {

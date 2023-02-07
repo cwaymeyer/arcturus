@@ -9,13 +9,17 @@ const ActionsList = ({
 }) => {
   const handleActionSelection = (action) => {
     console.log(action);
+    console.log("DATA");
+    console.log(actionsData);
 
     // get access level of selected action
     let accessLevel;
     for (const key in actionsData) {
-      actionsData[key].forEach((actionDetails) => {
-        if (actionDetails.name === action) accessLevel = key;
-      });
+      for (let actionDetails of actionsData[key]) {
+        if (actionDetails.name === action) {
+          accessLevel = key;
+        }
+      }
     }
 
     // update actions list
