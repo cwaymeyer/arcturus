@@ -1,6 +1,7 @@
 import { Box, Button, TextInput, Spinner } from "grommet";
 import { Api } from "../library/Api";
 import { FormSearch } from "grommet-icons";
+import { findRepeatedWords } from "../library/utils";
 
 const ServicesList = ({
   servicesData,
@@ -8,6 +9,7 @@ const ServicesList = ({
   setDisplayedServices,
   setActionsData,
   setCurrentAccordion,
+  setStatementStage,
 }) => {
   const handleServiceSearch = (searchValue) => {
     const filteredServices = servicesData.filter((service) => {
@@ -22,17 +24,30 @@ const ServicesList = ({
   };
 
   const handleServiceSelection = async (service) => {
+    console.log(service);
+
+    const serviceSnakeValue = service.toLowerCase().split(" ").join("_");
+
+    setStatementStage((existingValues) => ({
+      ...existingValues,
+      serviceName: service,
+      serviceValue: serviceSnakeValue,
+    }));
     setCurrentAccordion(1);
-    const checkActions = localStorage.getItem(`${service}-actions`);
+
+    const checkActions = localStorage.getItem(`${serviceSnakeValue}-actions`);
     if (checkActions) {
       const actions = JSON.parse(checkActions);
       setActionsData(actions);
     } else {
-      const data = await Api.getServiceData(service, "ACTION");
+      const data = await Api.getServiceData(serviceSnakeValue, "ACTION");
       console.log(data);
 
-      localStorage.setItem(`${service}-actions`, JSON.stringify(data.Items));
-      const actions = localStorage.getItem(`${service}-actions`);
+      localStorage.setItem(
+        `${serviceSnakeValue}-actions`,
+        JSON.stringify(data.Items)
+      );
+      const actions = localStorage.getItem(`${serviceSnakeValue}-actions`);
       const parsedActions = JSON.parse(actions);
 
       // set object for actions state
@@ -45,8 +60,17 @@ const ServicesList = ({
         if (!actionsObject[action.access.S]) {
           actionsObject[action.access.S] = [];
         }
+        // actionsObject[action.access.S].actions.push(actionObj);
         actionsObject[action.access.S].push(actionObj);
       });
+
+      // // get suggestions for each access level and add to actionsObject
+      // console.log(actionsObject);
+      // for (const key in actionsObject) {
+      //   const actionsList = actionsObject[key].actions;
+      //   const suggestions = findRepeatedWords(actionsList);
+      //   actionsObject[key].suggestions = suggestions;
+      // }
 
       setActionsData(actionsObject);
     }
@@ -55,6 +79,7 @@ const ServicesList = ({
   if (servicesData.length) {
     return (
       <Box
+        margin={{ top: "small", bottom: "medium" }}
         justify="stretch"
         fill="horizontal"
         align="start"
@@ -80,13 +105,7 @@ const ServicesList = ({
             hoverIndicator={true}
             margin="xxsmall"
             value={service.sk.S}
-            onClick={async (e) => {
-              const snakeValue = e.target.value
-                .toLowerCase()
-                .split(" ")
-                .join("_");
-              await handleServiceSelection(snakeValue);
-            }}
+            onClick={async (e) => await handleServiceSelection(e.target.value)}
           />
         ))}
       </Box>
