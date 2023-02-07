@@ -13,7 +13,7 @@ import AppBar from "./components/AppBar";
 // import StyledAccordionPanel from "./components/StyledAccordionPanel";
 import ServicesList from "./components/ServicesList";
 import ActionsList from "./components/ActionsList";
-import StageDraft from "./components/StageDraft";
+// import StageDraft from "./components/StageDraft";
 
 const App = () => {
   const initialStatementStage = {
@@ -206,7 +206,7 @@ const App = () => {
           justify="stretch"
           fill="horizontal"
         >
-          <StageDraft statementStage={statementStage} />
+          {/* <StageDraft statementStage={statementStage} /> */}
         </Box>
         <Box
           pad="xsmall"
