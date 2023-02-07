@@ -10,7 +10,7 @@ import {
 import { Api } from "./library/Api";
 import { theme } from "./library/theme";
 import AppBar from "./components/AppBar";
-// import StyledAccordionPanel from "./components/StyledAccordionPanel";
+import StyledAccordionPanel from "./components/StyledAccordionPanel";
 import ServicesList from "./components/ServicesList";
 import ActionsList from "./components/ActionsList";
 // import StageDraft from "./components/StageDraft";
@@ -99,20 +99,9 @@ const App = () => {
           overflow="auto"
         >
           <Accordion animate={false} activeIndex={currentAccordion}>
-            <AccordionPanel
-              label={
-                <Text size="large" margin="small" weight="bold">
-                  Select Service
-                  <Text
-                    size="medium"
-                    weight="bolder"
-                    margin={{ left: "medium" }}
-                    color="primary"
-                  >
-                    {statementStage.serviceName}
-                  </Text>
-                </Text>
-              }
+            <StyledAccordionPanel
+              heading="Select Service"
+              subheading={statementStage.serviceName}
             >
               <ServicesList
                 servicesData={servicesData}
@@ -123,21 +112,10 @@ const App = () => {
                 statementStage={statementStage}
                 setStatementStage={setStatementStage}
               />
-            </AccordionPanel>
-            <AccordionPanel
-              label={
-                <Text size="large" margin="small" weight="bold">
-                  Select Access
-                  <Text
-                    size="medium"
-                    weight="bolder"
-                    margin={{ left: "medium" }}
-                    color="primary"
-                  >
-                    {statementStage.access}
-                  </Text>
-                </Text>
-              }
+            </StyledAccordionPanel>
+            <StyledAccordionPanel
+              heading="Select Access"
+              subheading={statementStage.access}
             >
               <RadioButtonGroup
                 name="Access"
@@ -145,23 +123,12 @@ const App = () => {
                 options={["Allow", "Deny"]}
                 onChange={(e) => handleAccessSelect(e.target.value)}
               />
-            </AccordionPanel>
-            <AccordionPanel
-              label={
-                <Text size="large" margin="small" weight="bold">
-                  Select Actions
-                  <Text
-                    size="medium"
-                    weight="bolder"
-                    margin={{ left: "medium" }}
-                    color="primary"
-                  >
-                    {Object.keys(statementStage.actions).map(
-                      (text) => text + " "
-                    )}
-                  </Text>
-                </Text>
-              }
+            </StyledAccordionPanel>
+            <StyledAccordionPanel
+              heading="Select Actions"
+              subheading={Object.keys(statementStage.actions).map(
+                (text) => text + " "
+              )}
             >
               <ActionsList
                 actionsData={actionsData}
@@ -169,33 +136,9 @@ const App = () => {
                 statementStage={statementStage}
                 setStatementStage={setStatementStage}
               />
-            </AccordionPanel>
-            <AccordionPanel
-              label={
-                <Text size="large" margin="small" weight="bold">
-                  Specify Resources
-                  <Text
-                    size="medium"
-                    weight="bolder"
-                    margin={{ left: "medium" }}
-                    color="primary"
-                  ></Text>
-                </Text>
-              }
-            ></AccordionPanel>
-            <AccordionPanel
-              label={
-                <Text size="large" margin="small" weight="bold">
-                  Specify Conditions
-                  <Text
-                    size="medium"
-                    weight="bolder"
-                    margin={{ left: "medium" }}
-                    color="primary"
-                  ></Text>
-                </Text>
-              }
-            ></AccordionPanel>
+            </StyledAccordionPanel>
+            <StyledAccordionPanel heading="Specify Resources" subheading="" />
+            <StyledAccordionPanel heading="Specify Conditions" subheading="" />
           </Accordion>
         </Box>
         <Box

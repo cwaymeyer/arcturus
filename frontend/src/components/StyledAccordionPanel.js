@@ -1,23 +1,24 @@
-// import { AccordionPanel, Text } from "grommet";
+import { AccordionPanel, Text } from "grommet";
 
-// const StyledAccordionPanel = ({ title, subheading, content }) => {
-//   return (
-//     <AccordionPanel
-//       label={
-//         <Text size="large" margin="small" weight="bold">
-//           {title}
-//           <Text
-//             size="medium"
-//             weight="bolder"
-//             margin={{ left: "medium" }}
-//             color="primary"
-//           ></Text>
-//         </Text>
-//       }
-//     >
-//       {content}
-//     </AccordionPanel>
-//   );
-// };
+const StyledAccordionPanel = ({ heading, subheading, ...rest }) => {
+  return (
+    <AccordionPanel
+      label={
+        <Text size="large" margin="small" weight="bold">
+          {heading}
+          <Text
+            size="medium"
+            weight="bolder"
+            margin={{ left: "medium" }}
+            color="primary"
+          >
+            {subheading}
+          </Text>
+        </Text>
+      }
+      {...rest}
+    />
+  );
+};
 
-// export default StyledAccordionPanel;
+export default StyledAccordionPanel;
