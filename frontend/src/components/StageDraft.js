@@ -1,17 +1,17 @@
-import { Box, Spinner, Button, Tip, Text, PageHeader, Page } from "grommet";
+import { Box, Button, Text, Tip, Page, PageHeader } from "grommet";
 import { CircleInformation } from "grommet-icons";
 
-const ActionsList = ({
-  actionsData,
-  setActionsData,
+const StageDraft = ({
   stagedStatement,
   setStagedStatement,
+  actionsData,
+  setActionsData,
 }) => {
   const handleActionSelection = (actionName) => {
     // get access level of selected action
     let accessLevel;
-    for (const key in actionsData) {
-      for (let actionDetails of actionsData[key]) {
+    for (const key in stagedStatement.actions) {
+      for (let actionDetails of stagedStatement.actions[key]) {
         if (actionDetails.name === actionName) {
           accessLevel = key;
         }
@@ -19,75 +19,65 @@ const ActionsList = ({
     }
 
     // update actionsData
-    let poppedAction;
-    const updatedArray = actionsData[accessLevel].map((val) => {
+    const updatedActionsDataArray = actionsData[accessLevel].map((val) => {
       if (val.name === actionName) {
-        val.disabled = true;
-        poppedAction = val;
+        val.disabled = false;
       }
       return val;
     });
 
     setActionsData((existingValues) => ({
       ...existingValues,
-      [accessLevel]: updatedArray,
+      [accessLevel]: updatedActionsDataArray,
     }));
 
     // update stagedStatement
-    let stagedActions = stagedStatement.actions;
-    if (!stagedActions[accessLevel]) {
-      stagedActions[accessLevel] = [];
+    let newStagedActionsObject = stagedStatement.actions;
+
+    const updatedStagedStatement = stagedStatement.actions[accessLevel].filter(
+      (val) => val.name !== actionName
+    );
+
+    if (!updatedStagedStatement.length) {
+      delete newStagedActionsObject[accessLevel];
+    } else {
+      newStagedActionsObject[accessLevel] = updatedStagedStatement;
     }
-    stagedActions[accessLevel].push(poppedAction);
 
     setStagedStatement((existingValues) => ({
       ...existingValues,
-      actions: stagedActions,
+      actions: newStagedActionsObject,
     }));
   };
 
-  const handleAddAllSelection = (accessLevel) => {
+  const handleRemoveAllSelection = (accessLevel) => {
     // update actionsData
-    const updatedArray = actionsData[accessLevel].map((val) => {
-      val.disabled = true;
+    const updatedActionsDataArray = actionsData[accessLevel].map((val) => {
+      val.disabled = false;
       return val;
     });
 
     setActionsData((existingValues) => ({
       ...existingValues,
-      [accessLevel]: updatedArray,
+      [accessLevel]: updatedActionsDataArray,
     }));
 
     // update stagedStatement
-    let stagedActions = stagedStatement.actions;
-    stagedActions[accessLevel] = actionsData[accessLevel];
+    let updatedStagedStatement = stagedStatement.actions;
+    delete updatedStagedStatement[accessLevel];
 
     setStagedStatement((existingValues) => ({
       ...existingValues,
-      actions: stagedActions,
+      actions: updatedStagedStatement,
     }));
   };
 
-  // const handleAllActionsSelection = () => {};
+  const stagedStatementActionKeys = Object.keys(stagedStatement.actions);
 
-  const actionsDataKeys = Object.keys(actionsData);
-
-  if (actionsDataKeys.length) {
+  if (stagedStatementActionKeys.length) {
     return (
       <Box margin={{ top: "small", bottom: "medium" }}>
-        <Button
-          color="primary"
-          label="ADD ALL ACTIONS (*)"
-          size="small"
-          pad="xsmall"
-          alignSelf="center"
-          hoverIndicator
-          value="*"
-          fill={false}
-          plain
-          reverse
-        />
-        {actionsDataKeys.map((accessLevel) => {
+        {stagedStatementActionKeys.map((accessLevel) => {
           return (
             <Box
               justify="stretch"
@@ -103,12 +93,12 @@ const ActionsList = ({
                   title={accessLevel}
                   actions={
                     <Button
-                      label="Add all"
-                      color="primary"
+                      label="Remove all"
+                      color="secondary"
                       size="small"
                       primary
                       value={accessLevel}
-                      onClick={(e) => handleAddAllSelection(e.target.value)}
+                      onClick={(e) => handleRemoveAllSelection(e.target.value)}
                     />
                   }
                   size="small"
@@ -120,17 +110,16 @@ const ActionsList = ({
                   }}
                 />
               </Page>
-              {actionsData[accessLevel].map((action) => {
+              {stagedStatement.actions[accessLevel].map((action) => {
                 return (
                   <Box key={action.name + Date.now()}>
                     <Button
-                      color="primary"
+                      color="secondary"
                       label={action.name}
                       size="small"
                       fill={false}
                       hoverIndicator
                       margin="xxsmall"
-                      disabled={action.disabled}
                       reverse
                       value={action.name}
                       onClick={(e) =>
@@ -171,9 +160,7 @@ const ActionsList = ({
         })}
       </Box>
     );
-  } else {
-    return <Spinner margin="medium" />;
   }
 };
 
-export default ActionsList;
+export default StageDraft;
