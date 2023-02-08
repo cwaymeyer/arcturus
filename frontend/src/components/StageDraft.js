@@ -8,8 +8,6 @@ const StageDraft = ({
   setActionsData,
 }) => {
   const handleActionSelection = (actionName) => {
-    console.log(actionName);
-
     // get access level of selected action
     let accessLevel;
     for (const key in stagedStatement.actions) {
@@ -27,12 +25,11 @@ const StageDraft = ({
       }
       return val;
     });
-    console.log("✨ UPDATEDACTIONSDATAARRAY", updatedActionsDataArray);
+
     setActionsData((existingValues) => ({
       ...existingValues,
       [accessLevel]: updatedActionsDataArray,
     }));
-    console.log("✨ STAGE", actionsData);
 
     // update stagedStatement
     let newStagedActionsObject = stagedStatement.actions;
@@ -46,10 +43,42 @@ const StageDraft = ({
     } else {
       newStagedActionsObject[accessLevel] = updatedStagedStatement;
     }
-    console.log("new staged actions object", newStagedActionsObject);
+
     setStagedStatement((existingValues) => ({
       ...existingValues,
       actions: newStagedActionsObject,
+    }));
+  };
+
+  const handleRemoveAllSelection = (accessLevel) => {
+    // update actionsData
+    const updatedActionsDataArray = actionsData[accessLevel].map((val) => {
+      val.disabled = false;
+      return val;
+    });
+
+    setActionsData((existingValues) => ({
+      ...existingValues,
+      [accessLevel]: updatedActionsDataArray,
+    }));
+
+    // update stagedStatement
+    let updatedStagedStatement = stagedStatement.actions;
+    delete updatedStagedStatement[accessLevel];
+
+    // const updatedStagedStatement = stagedStatement.actions[accessLevel].filter(
+    //   (val) => val.name !== actionName
+    // );
+
+    // if (!updatedStagedStatement.length) {
+    //   delete newStagedActionsObject[accessLevel];
+    // } else {
+    //   newStagedActionsObject[accessLevel] = updatedStagedStatement;
+    // }
+
+    setStagedStatement((existingValues) => ({
+      ...existingValues,
+      actions: updatedStagedStatement,
     }));
   };
 
@@ -66,7 +95,7 @@ const StageDraft = ({
               align="start"
               alignContent="start"
               direction="row"
-              wrap={true}
+              wrap
               overflow="auto"
             >
               <Page>
@@ -78,6 +107,8 @@ const StageDraft = ({
                       color="tertiary"
                       size="small"
                       primary
+                      value={accessLevel}
+                      onClick={(e) => handleRemoveAllSelection(e.target.value)}
                     />
                   }
                   size="small"
@@ -97,7 +128,7 @@ const StageDraft = ({
                       label={action.name}
                       size="small"
                       fill={false}
-                      hoverIndicator={true}
+                      hoverIndicator
                       margin="xxsmall"
                       reverse
                       value={action.name}

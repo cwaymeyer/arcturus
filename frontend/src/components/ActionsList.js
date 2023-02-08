@@ -35,16 +35,12 @@ const ActionsList = ({
       [accessLevel]: updatedArray,
     }));
 
-    // update staging area
+    // update stagedStatement
     let stagedActions = stagedStatement.actions;
     if (!stagedActions[accessLevel]) {
       stagedActions[accessLevel] = [];
     }
     stagedActions[accessLevel].push(poppedAction);
-
-    // let updatedStageAccess = stagedStatement.actions;
-    // if (!updatedStageAccess.includes(accessLevel))
-    //   updatedStageAccess.push(accessLevel);
 
     setStagedStatement((existingValues) => ({
       ...existingValues,
@@ -52,8 +48,33 @@ const ActionsList = ({
     }));
   };
 
+  const handleAddAllSelection = (accessLevel) => {
+    console.log(accessLevel);
+
+    // update actionsData
+    const updatedArray = actionsData[accessLevel].map((val) => {
+      val.disabled = true;
+      return val;
+    });
+
+    setActionsData((existingValues) => ({
+      ...existingValues,
+      [accessLevel]: updatedArray,
+    }));
+
+    // update stagedStatement
+    let stagedActions = stagedStatement.actions;
+    stagedActions[accessLevel] = actionsData[accessLevel];
+
+    setStagedStatement((existingValues) => ({
+      ...existingValues,
+      actions: stagedActions,
+    }));
+  };
+
+  const handleAllActionsSelection = () => {};
+
   const actionsDataKeys = Object.keys(actionsData);
-  console.log("☄️ ACTIONSDATA in actionslist", actionsData);
 
   if (actionsDataKeys.length) {
     return (
@@ -71,7 +92,6 @@ const ActionsList = ({
           reverse
         />
         {actionsDataKeys.map((accessLevel) => {
-          console.log("LOOPING THROUGH KEY:", accessLevel);
           return (
             <Box
               justify="stretch"
@@ -91,6 +111,8 @@ const ActionsList = ({
                       color="primary"
                       size="small"
                       primary
+                      value={accessLevel}
+                      onClick={(e) => handleAddAllSelection(e.target.value)}
                     />
                   }
                   size="small"
@@ -103,7 +125,6 @@ const ActionsList = ({
                 />
               </Page>
               {actionsData[accessLevel].map((action) => {
-                console.log("LOOPING THROUGH ACTION:", action);
                 return (
                   <Box key={action.name + Date.now()}>
                     <Button
