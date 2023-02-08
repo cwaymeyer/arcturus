@@ -6,6 +6,7 @@ export const theme = {
       tertiary: "#D6EADF",
       deep: "#809BCE",
       light: "#EAC4D5",
+      danger: "#8B3A3C",
     },
     font: {
       family: "Karla",

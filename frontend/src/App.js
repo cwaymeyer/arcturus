@@ -1,22 +1,15 @@
 import { useState, useEffect } from "react";
-import {
-  Grommet,
-  Box,
-  Text,
-  RadioButtonGroup,
-  Accordion,
-  AccordionPanel,
-} from "grommet";
+import { Grommet, Box, Text, RadioButtonGroup, Accordion } from "grommet";
 import { Api } from "./library/Api";
 import { theme } from "./library/theme";
 import AppBar from "./components/AppBar";
 import StyledAccordionPanel from "./components/StyledAccordionPanel";
 import ServicesList from "./components/ServicesList";
 import ActionsList from "./components/ActionsList";
-// import StageDraft from "./components/StageDraft";
+import StageDraft from "./components/StageDraft";
 
 const App = () => {
-  const initialStatementStage = {
+  const initialStagedStatement = {
     serviceName: "",
     serviceValue: "",
     access: "",
@@ -32,7 +25,9 @@ const App = () => {
   const [displayedServices, setDisplayedServices] = useState([]); // displayed services, changes based on user search (subset of servicesData)
   const [currentAccordion, setCurrentAccordion] = useState(0); // current open accordion by index (null = none)
   const [actionsData, setActionsData] = useState([]); // all actions from selected service
-  const [statementStage, setStatementStage] = useState(initialStatementStage); // object containing current policy data
+  const [stagedStatement, setStagedStatement] = useState(
+    initialStagedStatement
+  ); // object containing current policy data
   // const [currentStatement, setCurrentStatement] = useState(
   //   initialPolicyStatement
   // ); // exact current staged IAM policy statement
@@ -61,6 +56,7 @@ const App = () => {
   }, []);
 
   // clear all local storage but services on page close
+  // TODO: set to session storage?
   window.onunload = () => {
     const services = localStorage.getItem("services");
     localStorage.clear();
@@ -68,7 +64,7 @@ const App = () => {
   };
 
   const handleAccessSelect = (access) => {
-    setStatementStage((existingValues) => ({
+    setStagedStatement((existingValues) => ({
       ...existingValues,
       access: access,
     }));
@@ -93,15 +89,15 @@ const App = () => {
       >
         <Box
           pad="xsmall"
-          border={{ color: "tertiary", size: "small" }}
           justify="stretch"
           fill="horizontal"
           overflow="auto"
+          elevation="medium"
         >
           <Accordion animate={false} activeIndex={currentAccordion}>
             <StyledAccordionPanel
               heading="Select Service"
-              subheading={statementStage.serviceName}
+              subheading={stagedStatement.serviceName}
             >
               <ServicesList
                 servicesData={servicesData}
@@ -109,13 +105,13 @@ const App = () => {
                 setDisplayedServices={setDisplayedServices}
                 setActionsData={setActionsData}
                 setCurrentAccordion={setCurrentAccordion}
-                statementStage={statementStage}
-                setStatementStage={setStatementStage}
+                stagedStatement={stagedStatement}
+                setStagedStatement={setStagedStatement}
               />
             </StyledAccordionPanel>
             <StyledAccordionPanel
               heading="Select Access"
-              subheading={statementStage.access}
+              subheading={stagedStatement.access}
             >
               <RadioButtonGroup
                 name="Access"
@@ -126,15 +122,21 @@ const App = () => {
             </StyledAccordionPanel>
             <StyledAccordionPanel
               heading="Select Actions"
-              subheading={Object.keys(statementStage.actions).map(
-                (text) => text + " "
-              )}
+              subheading={
+                Object.keys(stagedStatement.actions).length ===
+                  Object.keys(actionsData).length &&
+                Object.keys(stagedStatement.actions).length > 0
+                  ? "All"
+                  : Object.keys(stagedStatement.actions).map(
+                      (text) => text + " "
+                    )
+              }
             >
               <ActionsList
                 actionsData={actionsData}
                 setActionsData={setActionsData}
-                statementStage={statementStage}
-                setStatementStage={setStatementStage}
+                stagedStatement={stagedStatement}
+                setStagedStatement={setStagedStatement}
               />
             </StyledAccordionPanel>
             <StyledAccordionPanel heading="Specify Resources" subheading="" />
@@ -143,17 +145,24 @@ const App = () => {
         </Box>
         <Box
           pad="xsmall"
-          border={{ color: "tertiary", size: "small" }}
           justify="stretch"
           fill="horizontal"
+          overflow="auto"
+          elevation="medium"
         >
-          {/* <StageDraft statementStage={statementStage} /> */}
+          <StageDraft
+            stagedStatement={stagedStatement}
+            setStagedStatement={setStagedStatement}
+            actionsData={actionsData}
+            setActionsData={setActionsData}
+          />
         </Box>
         <Box
           pad="xsmall"
-          border={{ color: "tertiary", size: "small" }}
           justify="stretch"
           fill="horizontal"
+          overflow="auto"
+          elevation="medium"
         />
       </Box>
     </Grommet>

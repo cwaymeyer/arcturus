@@ -4,61 +4,56 @@ import { CircleInformation } from "grommet-icons";
 const ActionsList = ({
   actionsData,
   setActionsData,
-  statementStage,
-  setStatementStage,
+  stagedStatement,
+  setStagedStatement,
 }) => {
-  const handleActionSelection = (action) => {
-    console.log(action);
+  const handleActionSelection = (actionName) => {
+    console.log(actionName);
 
     // get access level of selected action
     let accessLevel;
     for (const key in actionsData) {
       for (let actionDetails of actionsData[key]) {
-        if (actionDetails.name === action) {
+        if (actionDetails.name === actionName) {
           accessLevel = key;
         }
       }
     }
 
-    // update actions list
+    // update actionsData
     let poppedAction;
-    const newArray = actionsData[accessLevel].filter((val) => {
-      if (val.name === action) poppedAction = val;
-      return val.name !== action;
+    const updatedArray = actionsData[accessLevel].map((val) => {
+      if (val.name === actionName) {
+        val.disabled = true;
+        poppedAction = val;
+      }
+      return val;
     });
 
     setActionsData((existingValues) => ({
       ...existingValues,
-      [accessLevel]: newArray,
+      [accessLevel]: updatedArray,
     }));
 
-    // // update staging area
-
-    // if (!actionsObject[action.access.S]) {
-    //   actionsObject[action.access.S] = [];
-    // }
-    // // actionsObject[action.access.S].actions.push(actionObj);
-    // actionsObject[action.access.S].push(actionObj);
-
-    let stagedActions = statementStage.actions;
+    // update staging area
+    let stagedActions = stagedStatement.actions;
     if (!stagedActions[accessLevel]) {
       stagedActions[accessLevel] = [];
     }
     stagedActions[accessLevel].push(poppedAction);
 
-    // let updatedStageAccess = statementStage.actions;
+    // let updatedStageAccess = stagedStatement.actions;
     // if (!updatedStageAccess.includes(accessLevel))
     //   updatedStageAccess.push(accessLevel);
 
-    setStatementStage((existingValues) => ({
+    setStagedStatement((existingValues) => ({
       ...existingValues,
       actions: stagedActions,
     }));
-    console.log("💥", statementStage);
   };
 
   const actionsDataKeys = Object.keys(actionsData);
-  console.log("✨", actionsData);
+  console.log("☄️ ACTIONSDATA in actionslist", actionsData);
 
   if (actionsDataKeys.length) {
     return (
@@ -69,13 +64,14 @@ const ActionsList = ({
           size="small"
           pad="xsmall"
           alignSelf="center"
-          hoverIndicator={true}
+          hoverIndicator
           value="*"
           fill={false}
           plain
           reverse
         />
         {actionsDataKeys.map((accessLevel) => {
+          console.log("LOOPING THROUGH KEY:", accessLevel);
           return (
             <Box
               justify="stretch"
@@ -83,7 +79,7 @@ const ActionsList = ({
               align="start"
               alignContent="start"
               direction="row"
-              wrap={true}
+              wrap
               overflow="auto"
             >
               <Page>
@@ -107,6 +103,7 @@ const ActionsList = ({
                 />
               </Page>
               {actionsData[accessLevel].map((action) => {
+                console.log("LOOPING THROUGH ACTION:", action);
                 return (
                   <Box key={action.name + Date.now()}>
                     <Button
@@ -114,8 +111,9 @@ const ActionsList = ({
                       label={action.name}
                       size="small"
                       fill={false}
-                      hoverIndicator={true}
+                      hoverIndicator
                       margin="xxsmall"
+                      disabled={action.disabled}
                       reverse
                       value={action.name}
                       onClick={(e) =>

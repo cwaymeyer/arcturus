@@ -9,7 +9,7 @@ const ServicesList = ({
   setDisplayedServices,
   setActionsData,
   setCurrentAccordion,
-  setStatementStage,
+  setStagedStatement,
 }) => {
   const handleServiceSearch = (searchValue) => {
     const filteredServices = servicesData.filter((service) => {
@@ -25,10 +25,9 @@ const ServicesList = ({
 
   const handleServiceSelection = async (service) => {
     console.log(service);
-
     const serviceSnakeValue = service.toLowerCase().split(" ").join("_");
 
-    setStatementStage((existingValues) => ({
+    setStagedStatement((existingValues) => ({
       ...existingValues,
       serviceName: service,
       serviceValue: serviceSnakeValue,
