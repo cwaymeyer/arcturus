@@ -66,16 +66,6 @@ const StageDraft = ({
     let updatedStagedStatement = stagedStatement.actions;
     delete updatedStagedStatement[accessLevel];
 
-    // const updatedStagedStatement = stagedStatement.actions[accessLevel].filter(
-    //   (val) => val.name !== actionName
-    // );
-
-    // if (!updatedStagedStatement.length) {
-    //   delete newStagedActionsObject[accessLevel];
-    // } else {
-    //   newStagedActionsObject[accessLevel] = updatedStagedStatement;
-    // }
-
     setStagedStatement((existingValues) => ({
       ...existingValues,
       actions: updatedStagedStatement,
@@ -104,7 +94,7 @@ const StageDraft = ({
                   actions={
                     <Button
                       label="Remove all"
-                      color="tertiary"
+                      color="secondary"
                       size="small"
                       primary
                       value={accessLevel}
@@ -146,7 +136,7 @@ const StageDraft = ({
                               gap="small"
                               margin="small"
                               width={{ max: "medium" }}
-                              background="tertiary"
+                              background="secondary"
                               round="small"
                             >
                               <Text size="small">{action.description}</Text>

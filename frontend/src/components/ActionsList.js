@@ -8,8 +8,6 @@ const ActionsList = ({
   setStagedStatement,
 }) => {
   const handleActionSelection = (actionName) => {
-    console.log(actionName);
-
     // get access level of selected action
     let accessLevel;
     for (const key in actionsData) {
@@ -49,8 +47,6 @@ const ActionsList = ({
   };
 
   const handleAddAllSelection = (accessLevel) => {
-    console.log(accessLevel);
-
     // update actionsData
     const updatedArray = actionsData[accessLevel].map((val) => {
       val.disabled = true;
@@ -151,7 +147,7 @@ const ActionsList = ({
                               gap="small"
                               margin="small"
                               width={{ max: "medium" }}
-                              background="tertiary"
+                              background="secondary"
                               round="small"
                             >
                               <Text size="small">{action.description}</Text>

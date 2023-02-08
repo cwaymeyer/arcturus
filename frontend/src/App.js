@@ -1,5 +1,13 @@
 import { useState, useEffect } from "react";
-import { Grommet, Box, Text, RadioButtonGroup, Accordion } from "grommet";
+import {
+  Grommet,
+  Box,
+  Text,
+  Nav,
+  Button,
+  RadioButtonGroup,
+  Accordion,
+} from "grommet";
 import { Api } from "./library/Api";
 import { theme } from "./library/theme";
 import AppBar from "./components/AppBar";
@@ -80,6 +88,24 @@ const App = () => {
             Create AWS IAM policies
           </Text>
         </Text>
+        <Nav direction="row">
+          <Text>
+            Helped by this tool?
+            <Button
+              margin={{ left: "small" }}
+              primary
+              size="small"
+              label={
+                <Text weight="bold" margin={{ left: "small", right: "small" }}>
+                  ☕ Buy me a coffee
+                </Text>
+              }
+              color="lightSecondary"
+              target="_blank"
+              href="https://www.buymeacoffee.com/calebwaymeyer"
+            />
+          </Text>
+        </Nav>
       </AppBar>
       <Box
         height="xlarge"
@@ -122,15 +148,11 @@ const App = () => {
             </StyledAccordionPanel>
             <StyledAccordionPanel
               heading="Select Actions"
-              subheading={
-                Object.keys(stagedStatement.actions).length ===
-                  Object.keys(actionsData).length &&
-                Object.keys(stagedStatement.actions).length > 0
-                  ? "All"
-                  : Object.keys(stagedStatement.actions).map(
-                      (text) => text + " "
-                    )
-              }
+              subheading={Object.keys(stagedStatement.actions).map(
+                (text, idx) => {
+                  return idx === 0 ? text : `, ${text}`;
+                }
+              )}
             >
               <ActionsList
                 actionsData={actionsData}
@@ -140,7 +162,8 @@ const App = () => {
               />
             </StyledAccordionPanel>
             <StyledAccordionPanel heading="Specify Resources" subheading="" />
-            <StyledAccordionPanel heading="Specify Conditions" subheading="" />
+            <StyledAccordionPanel heading="Add Principal?" subheading="" />
+            <StyledAccordionPanel heading="Add Conditions?" subheading="" />
           </Accordion>
         </Box>
         <Box
