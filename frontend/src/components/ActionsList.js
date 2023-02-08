@@ -68,7 +68,7 @@ const ActionsList = ({
     }));
   };
 
-  const handleAllActionsSelection = () => {};
+  // const handleAllActionsSelection = () => {};
 
   const actionsDataKeys = Object.keys(actionsData);
 
