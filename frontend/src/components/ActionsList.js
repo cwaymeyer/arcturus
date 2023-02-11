@@ -147,7 +147,7 @@ const ActionsList = ({
                               gap="small"
                               margin="small"
                               width={{ max: "medium" }}
-                              background="secondary"
+                              background="lightSecondary"
                               round="small"
                             >
                               <Text size="small">{action.description}</Text>
