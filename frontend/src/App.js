@@ -14,7 +14,9 @@ import AppBar from "./components/AppBar";
 import StyledAccordionPanel from "./components/StyledAccordionPanel";
 import ServicesList from "./components/ServicesList";
 import ActionsList from "./components/ActionsList";
+import Statements from "./components/Statements";
 import StageDraft from "./components/StageDraft";
+import JSONPolicy from "./components/JSONPolicy";
 
 const App = () => {
   const initialStagedStatement = {
@@ -24,10 +26,10 @@ const App = () => {
     actions: {},
   };
 
-  // const initialPolicyStatement = {
-  //   Version: "2012-10-17",
-  //   Statement: [],
-  // };
+  const initialPolicyDocument = {
+    Version: "2012-10-17",
+    Statement: [],
+  };
 
   const [servicesData, setServicesData] = useState([]); // all services, unchanging directly from Canopus table
   const [displayedServices, setDisplayedServices] = useState([]); // displayed services, changes based on user search (subset of servicesData)
@@ -36,9 +38,8 @@ const App = () => {
   const [stagedStatement, setStagedStatement] = useState(
     initialStagedStatement
   ); // object containing current policy data
-  // const [currentStatement, setCurrentStatement] = useState(
-  //   initialPolicyStatement
-  // ); // exact current staged IAM policy statement
+  const [statements, setStatements] = useState([]); // all added policy statements
+  const [document, setDocument] = useState(initialPolicyDocument); // exact current staged IAM policy statement
 
   useEffect(() => {
     const getServices = async () => {
@@ -173,11 +174,18 @@ const App = () => {
           overflow="auto"
           elevation="medium"
         >
+          <Statements statements={statements} />
           <StageDraft
             stagedStatement={stagedStatement}
             setStagedStatement={setStagedStatement}
+            initialStagedStatement={initialStagedStatement}
             actionsData={actionsData}
             setActionsData={setActionsData}
+            statements={statements}
+            setStatements={setStatements}
+            document={document}
+            setDocument={setDocument}
+            setCurrentAccordion={setCurrentAccordion}
           />
         </Box>
         <Box
@@ -186,7 +194,9 @@ const App = () => {
           fill="horizontal"
           overflow="auto"
           elevation="medium"
-        />
+        >
+          <JSONPolicy document={document} />
+        </Box>
       </Box>
     </Grommet>
   );
