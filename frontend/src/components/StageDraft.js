@@ -86,7 +86,7 @@ const StageDraft = ({
     let actionsArray = [];
     for (const accessLevel in stagedStatement.actions) {
       stagedStatement.actions[accessLevel].forEach((action) => {
-        actionsArray.push(`${stagedStatement.serviceValue}:${action.name}`);
+        actionsArray.push(`${action.prefix}:${action.name}`);
       });
     }
 
@@ -104,11 +104,12 @@ const StageDraft = ({
       Statement: currentDocumentStatement,
     }));
 
-    handleStageClear();
+    handleStageReset();
   };
 
-  const handleStageClear = () => {
+  const handleStageReset = () => {
     setStagedStatement(initialStagedStatement);
+    setActionsData({});
     setCurrentAccordion(0);
   };
 
@@ -216,8 +217,8 @@ const StageDraft = ({
             color="light"
             size="large"
             width="medium"
-            label={<Text weight="bold">Clear</Text>}
-            onClick={handleStageClear}
+            label={<Text weight="bold">Reset</Text>}
+            onClick={handleStageReset}
           />
         </Box>
       </Box>

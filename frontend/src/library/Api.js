@@ -26,15 +26,6 @@ export class Api {
     return response;
   };
 
-  // static getServiceData = async (serviceName) => {
-  //   console.log("📞 frontend getServiceData");
-
-  //   const params = { serviceName: serviceName };
-
-  //   const response = await this.makeCall("/service-data", params);
-  //   return response;
-  // };
-
   static getServiceData = async (serviceName, category) => {
     console.log("📞 frontend getServiceData");
 

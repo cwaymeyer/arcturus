@@ -34,7 +34,7 @@ const App = () => {
   const [servicesData, setServicesData] = useState([]); // all services, unchanging directly from Canopus table
   const [displayedServices, setDisplayedServices] = useState([]); // displayed services, changes based on user search (subset of servicesData)
   const [currentAccordion, setCurrentAccordion] = useState(0); // current open accordion by index (null = none)
-  const [actionsData, setActionsData] = useState([]); // all actions from selected service
+  const [actionsData, setActionsData] = useState({}); // all actions from selected service
   const [stagedStatement, setStagedStatement] = useState(
     initialStagedStatement
   ); // object containing current policy data

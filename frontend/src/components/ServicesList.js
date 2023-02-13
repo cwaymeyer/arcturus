@@ -13,18 +13,18 @@ const ServicesList = ({
 }) => {
   const handleServiceSearch = (searchValue) => {
     const filteredServices = servicesData.filter((service) => {
-      const serviceName = service.sk.S.toLowerCase();
-      const acronym = serviceName
-        .split(" ")
-        .map((word) => word[0])
-        .join("");
-      return serviceName.includes(searchValue) || acronym.includes(searchValue);
+      const serviceName = service.sk.S;
+      const acronym = serviceName.match(/[A-Z]/g).join("").toLowerCase();
+      return (
+        serviceName.toLowerCase().includes(searchValue) ||
+        acronym.includes(searchValue)
+      );
     });
     setDisplayedServices(filteredServices);
   };
 
   const handleServiceSelection = async (service) => {
-    console.log(service);
+    console.log("💡", service);
     const serviceSnakeValue = service.toLowerCase().split(" ").join("_");
 
     setStagedStatement((existingValues) => ({
@@ -55,6 +55,7 @@ const ServicesList = ({
         const actionObj = {
           name: action.action.S,
           description: action.description.S,
+          prefix: action.prefix.S,
         };
         if (!actionsObject[action.access.S]) {
           actionsObject[action.access.S] = [];
