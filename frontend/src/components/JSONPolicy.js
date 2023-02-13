@@ -3,25 +3,28 @@ import { Box, TextArea, Button, Notification } from "grommet";
 import { Copy, Checkmark } from "grommet-icons";
 
 const JSONPolicy = ({ document }) => {
-  const [visible, setVisible] = useState(false);
+  const [visibleCopyNotif, setVisibleCopyNotif] = useState(false);
+
+  const formattedDoc = JSON.stringify(document, null, 2);
 
   if (document.Statement.length) {
     return (
       <>
-        {visible && (
+        {visibleCopyNotif && (
           <Notification
             toast
             title="Policy Document Copied"
             icon={<Checkmark />}
             time={4000}
-            onClose={() => setVisible(false)}
+            onClose={() => setVisibleCopyNotif(false)}
           />
         )}
-        <Box align="end" margin={{ top: "xsmall", right: "xsmall" }}>
+        <Box align="end" direction="row-reverse">
           <Button
+            margin={{ top: "small", right: "small" }}
             onClick={() => {
-              navigator.clipboard.writeText(JSON.stringify(document, null, 4));
-              setVisible(true);
+              navigator.clipboard.writeText(formattedDoc);
+              setVisibleCopyNotif(true);
             }}
           >
             <Copy />
@@ -31,9 +34,15 @@ const JSONPolicy = ({ document }) => {
           fill
           plain
           resize={false}
+          size="small"
           focusIndicator="false"
-          style={{ fontWeight: "normal", lineHeight: 1.4 }}
-          value={JSON.stringify(document, null, 4)}
+          spellCheck="false"
+          style={{
+            fontFamily: "JetBrains Mono",
+            fontWeight: "normal",
+            lineHeight: 1.4,
+          }}
+          value={formattedDoc}
         />
       </>
     );
