@@ -1,7 +1,7 @@
 import { Box, Button, TextInput, Spinner } from "grommet";
 import { Api } from "../library/Api";
 import { FormSearch } from "grommet-icons";
-// import { findRepeatedWords } from "../library/utils";
+import { createWildcardSuggestions } from "../library/utils";
 
 const ServicesList = ({
   servicesData,
@@ -34,13 +34,14 @@ const ServicesList = ({
     }));
     setCurrentAccordion(1);
 
+    let servicePrefix;
+
     const checkActions = localStorage.getItem(`${serviceSnakeValue}-actions`);
     if (checkActions) {
       const actions = JSON.parse(checkActions);
       setActionsData(actions);
     } else {
       const data = await Api.getServiceData(serviceSnakeValue, "ACTION");
-      console.log(data);
 
       localStorage.setItem(
         `${serviceSnakeValue}-actions`,
@@ -50,29 +51,40 @@ const ServicesList = ({
       const parsedActions = JSON.parse(actions);
 
       // set object for actions state
-      let actionsObject = {};
+      let actionsObject = {
+        actions: {},
+        suggestions: {},
+      };
+
+      servicePrefix = parsedActions[0].prefix.S;
+
       parsedActions.forEach((action) => {
         const actionObj = {
           name: action.action.S,
           description: action.description.S,
-          prefix: action.prefix.S,
+          prefix: servicePrefix,
         };
-        if (!actionsObject[action.access.S]) {
-          actionsObject[action.access.S] = [];
+        if (!actionsObject.actions[action.access.S]) {
+          actionsObject.actions[action.access.S] = [];
         }
-        // actionsObject[action.access.S].actions.push(actionObj);
-        actionsObject[action.access.S].push(actionObj);
+        actionsObject.actions[action.access.S].push(actionObj);
       });
 
-      // // get suggestions for each access level and add to actionsObject
-      // console.log(actionsObject);
-      // for (const key in actionsObject) {
-      //   const actionsList = actionsObject[key].actions;
-      //   const suggestions = findRepeatedWords(actionsList);
-      //   actionsObject[key].suggestions = suggestions;
-      // }
+      // get suggestions for each access level and add to actionsObject
+      for (const key in actionsObject.actions) {
+        const actionsList = actionsObject.actions[key].map(
+          (action) => action.name
+        );
+        const suggestions = createWildcardSuggestions(
+          actionsList,
+          key,
+          servicePrefix
+        );
+        actionsObject.suggestions[key] = suggestions;
+      }
 
       setActionsData(actionsObject);
+      setDisplayedServices(servicesData);
     }
   };
 

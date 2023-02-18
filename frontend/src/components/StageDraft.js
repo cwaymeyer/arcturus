@@ -116,6 +116,7 @@ const StageDraft = ({
   const stagedStatementActionKeys = Object.keys(stagedStatement.actions);
 
   if (stagedStatementActionKeys.length) {
+    console.log(stagedStatement);
     return (
       <Box>
         <Box margin={{ top: "small", bottom: "medium" }}>

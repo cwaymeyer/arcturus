@@ -7,38 +7,53 @@ const ActionsList = ({
   stagedStatement,
   setStagedStatement,
 }) => {
-  const handleActionSelection = (actionName) => {
-    // get access level of selected action
-    let accessLevel;
-    for (const key in actionsData) {
-      for (let actionDetails of actionsData[key]) {
-        if (actionDetails.name === actionName) {
-          accessLevel = key;
-        }
-      }
+  const disableActionInList = (actionName, whichList, access) => {
+    const updateActionsDataCategory = (newArray) => {
+      setActionsData((existingValues) => ({
+        ...existingValues,
+        [access]: newArray,
+      }));
+    };
+
+    switch (typeof actionName) {
+      case "string":
+        let poppedAction;
+        const updatedArraySingle = actionsData[whichList][access].map((val) => {
+          if (val.name === actionName) {
+            val.disabled = true;
+            poppedAction = val;
+          }
+          return val;
+        });
+        updateActionsDataCategory(updatedArraySingle);
+
+        return poppedAction;
+      case "object": // array is an object in JS
+        let poppedActions = [];
+        const updatedArrayMultiple = actionsData[whichList][access].map(
+          (val) => {
+            if (actionName.includes(val.name)) {
+              val.disabled = true;
+              poppedActions.push(val);
+            }
+            return val;
+          }
+        );
+        updateActionsDataCategory(updatedArrayMultiple);
+
+        return poppedActions;
+      default:
+        throw `Action must be of type string or array ('object'). Received ${typeof actionName}.`;
     }
+  };
 
-    // update actionsData
-    let poppedAction;
-    const updatedArray = actionsData[accessLevel].map((val) => {
-      if (val.name === actionName) {
-        val.disabled = true;
-        poppedAction = val;
-      }
-      return val;
-    });
-
-    setActionsData((existingValues) => ({
-      ...existingValues,
-      [accessLevel]: updatedArray,
-    }));
-
+  const addActionToStage = (action, accessLevel) => {
     // update stagedStatement
     let stagedActions = stagedStatement.actions;
     if (!stagedActions[accessLevel]) {
       stagedActions[accessLevel] = [];
     }
-    stagedActions[accessLevel].push(poppedAction);
+    stagedActions[accessLevel].push(action);
 
     setStagedStatement((existingValues) => ({
       ...existingValues,
@@ -46,9 +61,53 @@ const ActionsList = ({
     }));
   };
 
+  const handleActionSelection = (actionName) => {
+    // get access level of selected action
+    let accessLevel;
+    for (const key in actionsData.actions) {
+      for (let actionDetails of actionsData.actions[key]) {
+        if (actionDetails.name === actionName) {
+          accessLevel = key;
+        }
+      }
+    }
+    const action = disableActionInList(actionName, "actions", accessLevel);
+    addActionToStage(action, accessLevel);
+
+    console.log("STAGED STATEMENT", stagedStatement);
+    console.log("ACTIONS DATA", actionsData);
+  };
+
+  const handleWildcardSuggestion = (wildcard) => {
+    const wildcardData = JSON.parse(wildcard);
+
+    console.log(wildcardData);
+    if (wildcardData.type === "prefix") {
+      let actionNamesToDisable = [];
+      actionsData.actions[wildcardData.accessLevel].forEach((action) => {
+        const searchVal = wildcardData.name.slice(0, -1);
+        const currActionPrefix = action.name.slice(0, searchVal.length);
+        if (currActionPrefix === searchVal)
+          actionNamesToDisable.push(action.name);
+      });
+      disableActionInList(
+        wildcardData.name,
+        "suggestions",
+        wildcardData.accessLevel
+      );
+      disableActionInList(
+        actionNamesToDisable,
+        "actions",
+        wildcardData.accessLevel
+      );
+    }
+
+    console.log("clicked");
+  };
+
   const handleAddAllSelection = (accessLevel) => {
     // update actionsData
-    const updatedArray = actionsData[accessLevel].map((val) => {
+    const updatedArray = actionsData.actions[accessLevel].map((val) => {
       val.disabled = true;
       return val;
     });
@@ -60,7 +119,7 @@ const ActionsList = ({
 
     // update stagedStatement
     let stagedActions = stagedStatement.actions;
-    stagedActions[accessLevel] = actionsData[accessLevel];
+    stagedActions[accessLevel] = actionsData.actions[accessLevel];
 
     setStagedStatement((existingValues) => ({
       ...existingValues,
@@ -70,7 +129,7 @@ const ActionsList = ({
 
   // const handleAllActionsSelection = () => {};
 
-  const actionsDataKeys = Object.keys(actionsData);
+  const actionsDataKeys = Object.keys(actionsData.actions);
 
   if (actionsDataKeys.length) {
     return (
@@ -120,7 +179,29 @@ const ActionsList = ({
                   }}
                 />
               </Page>
-              {actionsData[accessLevel].map((action) => {
+              {actionsData.suggestions[accessLevel].length
+                ? actionsData.suggestions[accessLevel].map((suggestion) => {
+                    return (
+                      <Box key={suggestion.name + Date.now()}>
+                        <Button
+                          color="primary"
+                          label={suggestion.name}
+                          size="small"
+                          active
+                          fill={false}
+                          hoverIndicator
+                          margin="xxsmall"
+                          disabled={suggestion.disabled}
+                          value={JSON.stringify(suggestion)}
+                          onClick={(e) =>
+                            handleWildcardSuggestion(e.target.value)
+                          }
+                        ></Button>
+                      </Box>
+                    );
+                  })
+                : null}
+              {actionsData.actions[accessLevel].map((action) => {
                 return (
                   <Box key={action.name + Date.now()}>
                     <Button

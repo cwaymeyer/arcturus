@@ -57,6 +57,8 @@ def handler():
         actions_table = tables[0]
         actions_data = scrape_actions(actions_table, resource_types, condition_keys)
 
+        # print(actions_data)
+
         obj = { 
             'service_name': service['name'], 
             'service_prefix': service_prefix, 
@@ -69,7 +71,7 @@ def handler():
             obj['resource_types'] = resource_types_data
         data.append(obj)
 
-    upload_iam_data_to_dynamo(data)
+    # upload_iam_data_to_dynamo(data)
 
     return data
 
