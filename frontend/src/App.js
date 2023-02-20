@@ -24,6 +24,7 @@ const App = () => {
     serviceValue: "",
     access: "",
     actions: {},
+    suggestions: {},
   };
 
   const initialPolicyDocument = {

@@ -90,6 +90,12 @@ const StageDraft = ({
       });
     }
 
+    for (const accessLevel in stagedStatement.suggestions) {
+      stagedStatement.suggestions[accessLevel].forEach((action) => {
+        actionsArray.push(`${action.prefix}:${action}`);
+      });
+    }
+
     let policyObj = {
       Effect: stagedStatement.access,
       Action: actionsArray,
@@ -113,14 +119,16 @@ const StageDraft = ({
     setCurrentAccordion(0);
   };
 
-  const stagedStatementActionKeys = Object.keys(stagedStatement.actions);
+  const actionKeys = Object.keys(stagedStatement.actions);
+  const suggestionKeys = Object.keys(stagedStatement.suggestions);
+  const stagedStatementKeys = [...new Set(actionKeys.concat(suggestionKeys))]; // combine with no dublicates
 
-  if (stagedStatementActionKeys.length) {
+  if (stagedStatementKeys.length) {
     console.log(stagedStatement);
     return (
       <Box>
         <Box margin={{ top: "small", bottom: "medium" }}>
-          {stagedStatementActionKeys.map((accessLevel) => {
+          {stagedStatementKeys.map((accessLevel) => {
             return (
               <Box
                 justify="stretch"
@@ -155,51 +163,78 @@ const StageDraft = ({
                     }}
                   />
                 </Page>
-                {stagedStatement.actions[accessLevel].map((action) => {
-                  return (
-                    <Box key={action.name + Date.now()}>
-                      <Button
-                        color="secondary"
-                        label={action.name}
-                        size="small"
-                        fill={false}
-                        hoverIndicator
-                        margin="xxsmall"
-                        reverse
-                        value={action.name}
-                        onClick={(e) =>
-                          handleActionSelection(e.currentTarget.value)
-                        }
-                        icon={
-                          <Tip
-                            plain
-                            dropProps={{ align: { bottom: "top" } }}
+                {suggestionKeys.includes(accessLevel)
+                  ? stagedStatement.suggestions[accessLevel].map(
+                      (suggestion) => {
+                        return (
+                          <Box key={suggestion + Date.now()}>
+                            <Button
+                              color="secondary"
+                              label={suggestion}
+                              size="small"
+                              active
+                              fill={false}
+                              hoverIndicator
+                              margin="xxsmall"
+                              value={JSON.stringify(suggestion)}
+                              // onClick={(e) =>
+                              //   handleWildcardSuggestion(e.target.value)
+                              // }
+                            ></Button>
+                          </Box>
+                        );
+                      }
+                    )
+                  : null}
+                {actionKeys.includes(accessLevel)
+                  ? stagedStatement.actions[accessLevel].map((action) => {
+                      return (
+                        <Box key={action.name + Date.now()}>
+                          <Button
+                            color="secondary"
+                            label={action.name}
                             size="small"
-                            content={
-                              <Box
-                                pad="small"
-                                gap="small"
-                                margin="small"
-                                width={{ max: "medium" }}
-                                background="lightSecondary"
-                                round="small"
-                              >
-                                <Text size="small">{action.description}</Text>
-                              </Box>
+                            fill={false}
+                            hoverIndicator
+                            margin="xxsmall"
+                            reverse
+                            value={action.name}
+                            onClick={(e) =>
+                              handleActionSelection(e.currentTarget.value)
                             }
-                          >
-                            <Box round="small">
-                              <CircleInformation
+                            icon={
+                              <Tip
+                                plain
+                                dropProps={{ align: { bottom: "top" } }}
                                 size="small"
-                                background="secondary"
-                              />
-                            </Box>
-                          </Tip>
-                        }
-                      />
-                    </Box>
-                  );
-                })}
+                                content={
+                                  <Box
+                                    pad="small"
+                                    gap="small"
+                                    margin="small"
+                                    width={{ max: "medium" }}
+                                    background="lightSecondary"
+                                    round="small"
+                                  >
+                                    <Text size="small">
+                                      {action.description}
+                                    </Text>
+                                  </Box>
+                                }
+                              >
+                                <Box round="small">
+                                  <CircleInformation
+                                    size="small"
+                                    background="secondary"
+                                  />
+                                </Box>
+                              </Tip>
+                            }
+                          />
+                        </Box>
+                      );
+                    })
+                  : null}
               </Box>
             );
           })}

@@ -47,9 +47,9 @@ const ActionsList = ({
     }
   };
 
-  const addActionToStage = (action, accessLevel) => {
+  const addActionToStage = (action, whichList, accessLevel) => {
     // update stagedStatement
-    let stagedActions = stagedStatement.actions;
+    let stagedActions = stagedStatement[whichList];
     if (!stagedActions[accessLevel]) {
       stagedActions[accessLevel] = [];
     }
@@ -57,7 +57,7 @@ const ActionsList = ({
 
     setStagedStatement((existingValues) => ({
       ...existingValues,
-      actions: stagedActions,
+      [whichList]: stagedActions,
     }));
   };
 
@@ -71,38 +71,52 @@ const ActionsList = ({
         }
       }
     }
-    const action = disableActionInList(actionName, "actions", accessLevel);
-    addActionToStage(action, accessLevel);
 
-    console.log("STAGED STATEMENT", stagedStatement);
-    console.log("ACTIONS DATA", actionsData);
+    const action = disableActionInList(actionName, "actions", accessLevel);
+    addActionToStage(action, "actions", accessLevel);
   };
 
   const handleWildcardSuggestion = (wildcard) => {
     const wildcardData = JSON.parse(wildcard);
 
     console.log(wildcardData);
+    let actionNamesToDisable = [];
     if (wildcardData.type === "prefix") {
-      let actionNamesToDisable = [];
       actionsData.actions[wildcardData.accessLevel].forEach((action) => {
         const searchVal = wildcardData.name.slice(0, -1);
         const currActionPrefix = action.name.slice(0, searchVal.length);
         if (currActionPrefix === searchVal)
           actionNamesToDisable.push(action.name);
       });
-      disableActionInList(
-        wildcardData.name,
-        "suggestions",
-        wildcardData.accessLevel
-      );
-      disableActionInList(
-        actionNamesToDisable,
-        "actions",
-        wildcardData.accessLevel
-      );
+    } else if (wildcardData.type === "suffix") {
+      actionsData.actions[wildcardData.accessLevel].forEach((action) => {
+        const searchVal = wildcardData.name.slice(1, wildcardData.name.length);
+        const currActionSuffix = action.name.slice(
+          -Math.abs(searchVal.length) // negative num
+        );
+        if (currActionSuffix === searchVal)
+          actionNamesToDisable.push(action.name);
+      });
+    } else {
+      throw `Wildcard must be prefix or suffix. Received ${wildcardData.type}.`;
     }
 
-    console.log("clicked");
+    disableActionInList(
+      wildcardData.name,
+      "suggestions",
+      wildcardData.accessLevel
+    );
+    disableActionInList(
+      actionNamesToDisable,
+      "actions",
+      wildcardData.accessLevel
+    );
+    addActionToStage(
+      wildcardData.name,
+      "suggestions",
+      wildcardData.accessLevel
+    );
+    console.log("😀", stagedStatement);
   };
 
   const handleAddAllSelection = (accessLevel) => {
