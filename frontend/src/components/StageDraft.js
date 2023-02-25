@@ -92,7 +92,7 @@ const StageDraft = ({
 
     for (const accessLevel in stagedStatement.suggestions) {
       stagedStatement.suggestions[accessLevel].forEach((action) => {
-        actionsArray.push(`${action.prefix}:${action}`);
+        actionsArray.push(`${action.prefix}:${action.name}`);
       });
     }
 
@@ -124,7 +124,6 @@ const StageDraft = ({
   const stagedStatementKeys = [...new Set(actionKeys.concat(suggestionKeys))]; // combine with no dublicates
 
   if (stagedStatementKeys.length) {
-    console.log(stagedStatement);
     return (
       <Box>
         <Box margin={{ top: "small", bottom: "medium" }}>
@@ -167,10 +166,10 @@ const StageDraft = ({
                   ? stagedStatement.suggestions[accessLevel].map(
                       (suggestion) => {
                         return (
-                          <Box key={suggestion + Date.now()}>
+                          <Box key={suggestion.name + Date.now()}>
                             <Button
                               color="secondary"
-                              label={suggestion}
+                              label={suggestion.name}
                               size="small"
                               active
                               fill={false}

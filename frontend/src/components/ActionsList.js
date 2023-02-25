@@ -79,7 +79,6 @@ const ActionsList = ({
   const handleWildcardSuggestion = (wildcard) => {
     const wildcardData = JSON.parse(wildcard);
 
-    console.log(wildcardData);
     let actionNamesToDisable = [];
     if (wildcardData.type === "prefix") {
       actionsData.actions[wildcardData.accessLevel].forEach((action) => {
@@ -91,9 +90,7 @@ const ActionsList = ({
     } else if (wildcardData.type === "suffix") {
       actionsData.actions[wildcardData.accessLevel].forEach((action) => {
         const searchVal = wildcardData.name.slice(1, wildcardData.name.length);
-        const currActionSuffix = action.name.slice(
-          -Math.abs(searchVal.length) // negative num
-        );
+        const currActionSuffix = action.name.slice(-Math.abs(searchVal.length));
         if (currActionSuffix === searchVal)
           actionNamesToDisable.push(action.name);
       });
@@ -111,12 +108,12 @@ const ActionsList = ({
       "actions",
       wildcardData.accessLevel
     );
-    addActionToStage(
-      wildcardData.name,
-      "suggestions",
-      wildcardData.accessLevel
-    );
-    console.log("😀", stagedStatement);
+
+    const wildcardObj = {
+      name: wildcardData.name,
+      prefix: wildcardData.servicePrefix,
+    };
+    addActionToStage(wildcardObj, "suggestions", wildcardData.accessLevel);
   };
 
   const handleAddAllSelection = (accessLevel) => {

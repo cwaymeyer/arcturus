@@ -26,7 +26,6 @@ const ServicesList = ({
   const handleServiceSelection = async (service) => {
     console.log("💡", service);
     const serviceSnakeValue = service.toLowerCase().split(" ").join("_");
-
     setStagedStatement((existingValues) => ({
       ...existingValues,
       serviceName: service,
