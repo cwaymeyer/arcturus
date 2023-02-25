@@ -1,7 +1,7 @@
 import { Box, Button, TextInput, Spinner } from "grommet";
-import { Api } from "../library/Api";
+import { Api } from "../../library/Api";
 import { FormSearch } from "grommet-icons";
-import { createWildcardSuggestions } from "../library/utils";
+import { createWildcardSuggestions } from "../../utils/createWildcardSuggestions";
 
 const ServicesList = ({
   servicesData,

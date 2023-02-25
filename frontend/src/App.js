@@ -9,14 +9,14 @@ import {
   Accordion,
 } from "grommet";
 import { Api } from "./library/Api";
-import { theme } from "./library/theme";
+import { theme } from "./style/theme";
 import AppBar from "./components/AppBar";
-import StyledAccordionPanel from "./components/StyledAccordionPanel";
-import ServicesList from "./components/ServicesList";
-import ActionsList from "./components/ActionsList";
-import Statements from "./components/Statements";
-import StageDraft from "./components/StageDraft";
-import JSONPolicy from "./components/JSONPolicy";
+import StyledAccordionPanel from "./components/select/StyledAccordionPanel";
+import ServicesList from "./components/select/ServicesList";
+import ActionsList from "./components/select/ActionsList";
+import Statements from "./components/stage/Statements";
+import StageDraft from "./components/stage/StageDraft";
+import JSONPolicy from "./components/result/JSONPolicy";
 
 const App = () => {
   const initialStagedStatement = {
