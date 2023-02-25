@@ -3,7 +3,6 @@ import { Edit } from "grommet-icons";
 
 const Statements = ({ statements }) => {
   if (statements.length) {
-    console.log(statements);
     return (
       <Box>
         {statements.map((statement) => {

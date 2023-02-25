@@ -1,3 +1,5 @@
+import re
+
 def scrape_conditions_and_resources(table):
     '''
     Get data from resource types and condition keys tables (passed as Beautiful Soup)
@@ -51,10 +53,13 @@ def scrape_actions(table, resource_types = False, condition_keys = False):
             data_obj['resource_types'].append(resource_obj)
         elif val in condition_keys:
             data_obj['condition_keys'].append(val)
-        elif val:
+        elif re.search('[a-z]+:[A-Za-z]+', val):
             data_obj['dependent_actions'].append(val)
+        else:
+            print('unidentified value: ', val)
 
     for row in table_rows:
+        print("🪴🪴🪴")
         if row.find('th'):
             stripped_headers = row.text.replace('(*required)', '')
             headers_list = stripped_headers.lower().replace(' ', '_').split() # create list of snake_case headers
@@ -65,7 +70,6 @@ def scrape_actions(table, resource_types = False, condition_keys = False):
                 'resource_types': [],
                 'condition_keys': [],
                 'dependent_actions': [],
-                'permission_only_action': 'false'
             }
 
         if (not 'data_obj' in locals()): # if data_obj does not exist
@@ -74,6 +78,7 @@ def scrape_actions(table, resource_types = False, condition_keys = False):
         data_blocks = row.find_all('td')
         for block in data_blocks:
             value = block.text.lstrip().rstrip()
+            print(block)
             if block.find('a', attrs={'id' : True }): # new row block includes an ID
                 if 'actions' in data_obj: # if action has been filled (not first row)
                     data['rows'].append(data_obj)
@@ -81,9 +86,6 @@ def scrape_actions(table, resource_types = False, condition_keys = False):
                 curr_row = 0
 
             if curr_row < 3: # first three cells are predictable
-                if '[permission only]' in value:
-                    value = value[:-18]
-                    data_obj['permission_only_action'] = 'true'
                 data_obj[data['headers'][curr_row]] = value
             else: # remaining cells are unpredictable
                 if '\n' in value:

@@ -1,9 +1,14 @@
 /**
  * Takes array of AWS actions and finds common prefixes and suffixes among them
- * => [ formatted prefixes and suffixes ]
+ * => [ { name: <prefix/suffix>, count: <occurances> } ]
  */
 
-export const findRepeatedWords = (arr, repetitionsNeeded = 3) => {
+export const createWildcardSuggestions = (
+  arr,
+  accessLevel,
+  servicePrefix,
+  repetitionsNeeded = 3
+) => {
   const splitOnUppercase = (string) => string.match(/[A-Z][a-z]+/g);
 
   let prefixes = {};
@@ -18,21 +23,34 @@ export const findRepeatedWords = (arr, repetitionsNeeded = 3) => {
     lastWord in suffixes ? suffixes[lastWord]++ : (suffixes[lastWord] = 1);
   });
 
-  const getRepetitions = (obj) => {
+  const getRepetitions = (obj, type) => {
     let repeatedStrings = [];
 
     for (let key in obj) {
-      if (obj[key] >= repetitionsNeeded) repeatedStrings.push(key);
+      if (obj[key] >= repetitionsNeeded)
+        repeatedStrings.push({
+          name: key,
+          count: obj[key],
+          accessLevel: accessLevel,
+          type: type,
+          servicePrefix: servicePrefix,
+        });
     }
 
     return repeatedStrings;
   };
 
-  const repeatedPrefixes = getRepetitions(prefixes);
-  const repeatedSuffixes = getRepetitions(suffixes);
+  const repeatedPrefixes = getRepetitions(prefixes, "prefix");
+  const repeatedSuffixes = getRepetitions(suffixes, "suffix");
 
-  const formattedPrefixes = repeatedPrefixes.map((string) => string + "*");
-  const formattedSuffixes = repeatedSuffixes.map((string) => "*" + string);
+  const formattedPrefixes = repeatedPrefixes.map((prefix) => {
+    return { ...prefix, name: prefix.name + "*" };
+  });
+  const formattedSuffixes = repeatedSuffixes.map((suffix) => {
+    return { ...suffix, name: "*" + suffix.name };
+  });
 
-  return [...formattedPrefixes, ...formattedSuffixes];
+  const allWildcards = [...formattedPrefixes, ...formattedSuffixes];
+
+  return allWildcards;
 };
