@@ -65,14 +65,6 @@ const App = () => {
     getServices();
   }, []);
 
-  // clear all local storage but services on page close
-  // TODO: set to session storage?
-  window.onunload = () => {
-    const services = localStorage.getItem("services");
-    localStorage.clear();
-    localStorage.setItem("services", services);
-  };
-
   const handleAccessSelect = (access) => {
     setStagedStatement((existingValues) => ({
       ...existingValues,

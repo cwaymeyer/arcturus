@@ -35,18 +35,18 @@ const ServicesList = ({
 
     let servicePrefix;
 
-    const checkActions = localStorage.getItem(`${serviceSnakeValue}-actions`);
+    const checkActions = sessionStorage.getItem(`${serviceSnakeValue}-actions`);
     if (checkActions) {
       const actions = JSON.parse(checkActions);
       setActionsData(actions);
     } else {
       const data = await Api.getServiceData(serviceSnakeValue, "ACTION");
 
-      localStorage.setItem(
+      sessionStorage.setItem(
         `${serviceSnakeValue}-actions`,
         JSON.stringify(data.Items)
       );
-      const actions = localStorage.getItem(`${serviceSnakeValue}-actions`);
+      const actions = sessionStorage.getItem(`${serviceSnakeValue}-actions`);
       const parsedActions = JSON.parse(actions);
 
       // set object for actions state
