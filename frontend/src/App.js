@@ -11,6 +11,8 @@ import {
 import { Api } from "./library/Api";
 import { theme } from "./style/theme";
 import AppBar from "./components/AppBar";
+import SupportMe from "./components/SupportMe";
+import FullBox from "./components/FullBox";
 import StyledAccordionPanel from "./components/select/StyledAccordionPanel";
 import ServicesList from "./components/select/ServicesList";
 import ActionsList from "./components/select/ActionsList";
@@ -83,22 +85,7 @@ const App = () => {
           </Text>
         </Text>
         <Nav direction="row">
-          <Text>
-            Helped by this tool?
-            <Button
-              margin={{ left: "small" }}
-              primary
-              size="small"
-              label={
-                <Text weight="bold" margin={{ left: "small", right: "small" }}>
-                  ☕ Buy me a coffee
-                </Text>
-              }
-              color="lightSecondary"
-              target="_blank"
-              href="https://www.buymeacoffee.com/calebwaymeyer"
-            />
-          </Text>
+          <SupportMe />
         </Nav>
       </AppBar>
       <Box
@@ -107,13 +94,7 @@ const App = () => {
         margin={{ top: "small", bottom: "small" }}
         gap="small"
       >
-        <Box
-          pad="xsmall"
-          justify="stretch"
-          fill="horizontal"
-          overflow="auto"
-          elevation="medium"
-        >
+        <FullBox>
           <Accordion animate={false} activeIndex={currentAccordion}>
             <StyledAccordionPanel
               heading="Select Service"
@@ -159,14 +140,8 @@ const App = () => {
             <StyledAccordionPanel heading="Add Principal?" subheading="" />
             <StyledAccordionPanel heading="Add Conditions?" subheading="" />
           </Accordion>
-        </Box>
-        <Box
-          pad="xsmall"
-          justify="stretch"
-          fill="horizontal"
-          overflow="auto"
-          elevation="medium"
-        >
+        </FullBox>
+        <FullBox>
           <Statements statements={statements} />
           <StageDraft
             stagedStatement={stagedStatement}
@@ -180,16 +155,10 @@ const App = () => {
             setDocument={setDocument}
             setCurrentAccordion={setCurrentAccordion}
           />
-        </Box>
-        <Box
-          pad="xsmall"
-          justify="stretch"
-          fill="horizontal"
-          overflow="auto"
-          elevation="medium"
-        >
+        </FullBox>
+        <FullBox>
           <JSONPolicy document={document} />
-        </Box>
+        </FullBox>
       </Box>
     </Grommet>
   );

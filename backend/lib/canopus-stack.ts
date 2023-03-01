@@ -15,7 +15,7 @@ export class CanopusStack extends Stack {
     super(scope, id, props);
 
     const table = this.createDynamoTable();
-    this.createFargateTask(table.tableArn);
+    // this.createFargateTask(table.tableArn);
   }
 
   createDynamoTable = () => {
