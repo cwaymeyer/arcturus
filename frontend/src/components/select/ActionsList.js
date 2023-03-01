@@ -43,7 +43,9 @@ const ActionsList = ({
 
         return poppedActions;
       default:
-        throw "Action must be of type string or array ('object').";
+        throw new Error(
+          `Action must be of type string or array ('object'). Received ${typeof actionName}.`
+        );
     }
   };
 
@@ -95,7 +97,9 @@ const ActionsList = ({
           actionNamesToDisable.push(action.name);
       });
     } else {
-      throw "Wildcard must be prefix or suffix.";
+      throw new Error(
+        `Wildcard must be prefix or suffix. Received ${wildcardData.type}.`
+      );
     }
 
     disableActionInList(
