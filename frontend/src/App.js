@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
-import { Grommet, Box, Text, Nav, RadioButtonGroup, Accordion } from "grommet";
+import { Grommet, Box, RadioButtonGroup, Accordion } from "grommet";
 import { Api } from "./library/Api";
 import { theme } from "./style/theme";
-import AppBar from "./components/AppBar";
-import SupportMe from "./components/SupportMe";
+import AppHeader from "./components/AppHeader";
 import FullBox from "./components/FullBox";
 import StyledAccordionPanel from "./components/select/StyledAccordionPanel";
 import ServicesList from "./components/select/ServicesList";
@@ -67,28 +66,13 @@ const App = () => {
 
   const handleAccessSelect = (access) => {
     Stager.updateKeyInState(setStagedStatement, "access", access);
-
-    // setStagedStatement((existingValues) => ({
-    //   ...existingValues,
-    //   access: access,
-    // }));
     setCurrentAccordion(2);
   };
 
   return (
     <Grommet full theme={theme}>
       <Box fill background="lightBG">
-        <AppBar color="primary">
-          <Text size="xxlarge" margin="xsmall" weight="bold">
-            IAM Generator
-            <Text size="large" weight="normal" margin={{ left: "medium" }}>
-              Create AWS IAM policies
-            </Text>
-          </Text>
-          <Nav direction="row">
-            <SupportMe />
-          </Nav>
-        </AppBar>
+        <AppHeader />
         <Box
           height="xlarge"
           direction="row"

@@ -6,7 +6,6 @@ const JSONPolicy = ({ document }) => {
   const [visibleCopyNotif, setVisibleCopyNotif] = useState(false);
 
   const formattedDoc = JSON.stringify(document, null, 2);
-  console.log("DOCUMENT", document);
 
   if (document.Statement.length) {
     return (

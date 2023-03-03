@@ -18,18 +18,14 @@ const StageDraft = ({
     const accessLevel = Stager.getAccessLevelOfAction(actionsData, actionName);
 
     // update actionsData
-    const updatedActionsDataArray = actionsData[accessLevel].map((val) => {
+    const updatedArray = actionsData[accessLevel].map((val) => {
       if (val.name === actionName) {
         val.disabled = false;
       }
       return val;
     });
 
-    Stager.updateKeyInState(
-      setActionsData,
-      accessLevel,
-      updatedActionsDataArray
-    );
+    Stager.updateKeyInState(setActionsData, accessLevel, updatedArray);
 
     // update stagedStatement
     let newStagedActionsObject = stagedStatement.actions;

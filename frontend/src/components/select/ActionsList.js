@@ -59,6 +59,7 @@ const ActionsList = ({
       "suggestions",
       wildcardData.accessLevel
     );
+
     Stager.disableActionInList(
       actionsData,
       setActionsData,
@@ -71,6 +72,7 @@ const ActionsList = ({
       name: wildcardData.name,
       prefix: wildcardData.servicePrefix,
     };
+
     Stager.addActionToStage(
       stagedStatement,
       setStagedStatement,
