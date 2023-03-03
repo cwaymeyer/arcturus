@@ -1,5 +1,6 @@
 import { Box, Button, Text, Tip, Page, PageHeader } from "grommet";
 import { CircleInformation } from "grommet-icons";
+import { Stager } from "../../library/Stager";
 
 const StageDraft = ({
   stagedStatement,
@@ -14,28 +15,17 @@ const StageDraft = ({
   setCurrentAccordion,
 }) => {
   const handleActionSelection = (actionName) => {
-    // get access level of selected action
-    let accessLevel;
-    for (const key in stagedStatement.actions) {
-      for (let actionDetails of stagedStatement.actions[key]) {
-        if (actionDetails.name === actionName) {
-          accessLevel = key;
-        }
-      }
-    }
+    const accessLevel = Stager.getAccessLevelOfAction(actionsData, actionName);
 
     // update actionsData
-    const updatedActionsDataArray = actionsData[accessLevel].map((val) => {
+    const updatedArray = actionsData[accessLevel].map((val) => {
       if (val.name === actionName) {
         val.disabled = false;
       }
       return val;
     });
 
-    setActionsData((existingValues) => ({
-      ...existingValues,
-      [accessLevel]: updatedActionsDataArray,
-    }));
+    Stager.updateKeyInState(setActionsData, accessLevel, updatedArray);
 
     // update stagedStatement
     let newStagedActionsObject = stagedStatement.actions;
@@ -50,10 +40,11 @@ const StageDraft = ({
       newStagedActionsObject[accessLevel] = updatedStagedStatement;
     }
 
-    setStagedStatement((existingValues) => ({
-      ...existingValues,
-      actions: newStagedActionsObject,
-    }));
+    Stager.updateKeyInState(
+      setStagedStatement,
+      "actions",
+      newStagedActionsObject
+    );
   };
 
   const handleRemoveAllSelection = (accessLevel) => {
@@ -63,19 +54,21 @@ const StageDraft = ({
       return val;
     });
 
-    setActionsData((existingValues) => ({
-      ...existingValues,
-      [accessLevel]: updatedActionsDataArray,
-    }));
+    Stager.updateKeyInState(
+      setActionsData,
+      accessLevel,
+      updatedActionsDataArray
+    );
 
     // update stagedStatement
     let updatedStagedStatement = stagedStatement.actions;
     delete updatedStagedStatement[accessLevel];
 
-    setStagedStatement((existingValues) => ({
-      ...existingValues,
-      actions: updatedStagedStatement,
-    }));
+    Stager.updateKeyInState(
+      setStagedStatement,
+      "actions",
+      updatedStagedStatement
+    );
   };
 
   const handleStageSave = () => {
@@ -105,10 +98,7 @@ const StageDraft = ({
     let currentDocumentStatement = document.Statement;
     currentDocumentStatement.push(policyObj);
 
-    setDocument((existingValues) => ({
-      ...existingValues,
-      Statement: currentDocumentStatement,
-    }));
+    Stager.updateKeyInState(setDocument, "Statement", currentDocumentStatement);
 
     handleStageReset();
   };
