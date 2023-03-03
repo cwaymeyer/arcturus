@@ -2,6 +2,7 @@ import { Box, Button, TextInput, Spinner } from "grommet";
 import { Api } from "../../library/Api";
 import { FormSearch } from "grommet-icons";
 import { createWildcardSuggestions } from "../../utils/createWildcardSuggestions";
+import { Stager } from "../../library/Stager";
 
 const ServicesList = ({
   servicesData,
@@ -23,22 +24,61 @@ const ServicesList = ({
     setDisplayedServices(filteredServices);
   };
 
+  const createObjectForActionsData = (pulledActionsData) => {
+    // set object for actions state
+    let actionsObject = {
+      actions: {},
+      suggestions: {},
+    };
+
+    let servicePrefix = pulledActionsData[0].prefix.S;
+
+    pulledActionsData.forEach((action) => {
+      const actionObj = {
+        name: action.action.S,
+        description: action.description.S,
+        prefix: servicePrefix,
+      };
+      if (!actionsObject.actions[action.access.S]) {
+        actionsObject.actions[action.access.S] = [];
+      }
+      actionsObject.actions[action.access.S].push(actionObj);
+    });
+
+    // get suggestions for each access level and add to actionsObject
+    for (const key in actionsObject.actions) {
+      const actionsList = actionsObject.actions[key].map(
+        (action) => action.name
+      );
+      const suggestions = createWildcardSuggestions(
+        actionsList,
+        key,
+        servicePrefix
+      );
+      actionsObject.suggestions[key] = suggestions;
+    }
+    setActionsData(actionsObject);
+    setDisplayedServices(servicesData);
+  };
+
   const handleServiceSelection = async (service) => {
     console.log("💡", service);
     const serviceSnakeValue = service.toLowerCase().split(" ").join("_");
-    setStagedStatement((existingValues) => ({
-      ...existingValues,
-      serviceName: service,
-      serviceValue: serviceSnakeValue,
-    }));
-    setCurrentAccordion(1);
 
-    let servicePrefix;
+    Stager.updateKeyInState(setStagedStatement, "serviceName", service);
+    Stager.updateKeyInState(
+      setStagedStatement,
+      "serviceValue",
+      serviceSnakeValue
+    );
+
+    setCurrentAccordion(1);
 
     const checkActions = sessionStorage.getItem(`${serviceSnakeValue}-actions`);
     if (checkActions) {
-      const actions = JSON.parse(checkActions);
-      setActionsData(actions);
+      const parsedActions = JSON.parse(checkActions);
+
+      createObjectForActionsData(parsedActions);
     } else {
       const data = await Api.getServiceData(serviceSnakeValue, "ACTION");
 
@@ -49,41 +89,7 @@ const ServicesList = ({
       const actions = sessionStorage.getItem(`${serviceSnakeValue}-actions`);
       const parsedActions = JSON.parse(actions);
 
-      // set object for actions state
-      let actionsObject = {
-        actions: {},
-        suggestions: {},
-      };
-
-      servicePrefix = parsedActions[0].prefix.S;
-
-      parsedActions.forEach((action) => {
-        const actionObj = {
-          name: action.action.S,
-          description: action.description.S,
-          prefix: servicePrefix,
-        };
-        if (!actionsObject.actions[action.access.S]) {
-          actionsObject.actions[action.access.S] = [];
-        }
-        actionsObject.actions[action.access.S].push(actionObj);
-      });
-
-      // get suggestions for each access level and add to actionsObject
-      for (const key in actionsObject.actions) {
-        const actionsList = actionsObject.actions[key].map(
-          (action) => action.name
-        );
-        const suggestions = createWildcardSuggestions(
-          actionsList,
-          key,
-          servicePrefix
-        );
-        actionsObject.suggestions[key] = suggestions;
-      }
-
-      setActionsData(actionsObject);
-      setDisplayedServices(servicesData);
+      createObjectForActionsData(parsedActions);
     }
   };
 

@@ -1,5 +1,6 @@
 import { Box, Spinner, Button, Tip, Text, PageHeader, Page } from "grommet";
 import { CircleInformation } from "grommet-icons";
+import { Stager } from "../../library/Stager";
 
 const ActionsList = ({
   actionsData,
@@ -7,75 +8,24 @@ const ActionsList = ({
   stagedStatement,
   setStagedStatement,
 }) => {
-  const disableActionInList = (actionName, whichList, access) => {
-    const updateActionsDataCategory = (newArray) => {
-      setActionsData((existingValues) => ({
-        ...existingValues,
-        [access]: newArray,
-      }));
-    };
-
-    switch (typeof actionName) {
-      case "string":
-        let poppedAction;
-        const updatedArraySingle = actionsData[whichList][access].map((val) => {
-          if (val.name === actionName) {
-            val.disabled = true;
-            poppedAction = val;
-          }
-          return val;
-        });
-        updateActionsDataCategory(updatedArraySingle);
-
-        return poppedAction;
-      case "object": // array is an object in JS
-        let poppedActions = [];
-        const updatedArrayMultiple = actionsData[whichList][access].map(
-          (val) => {
-            if (actionName.includes(val.name)) {
-              val.disabled = true;
-              poppedActions.push(val);
-            }
-            return val;
-          }
-        );
-        updateActionsDataCategory(updatedArrayMultiple);
-
-        return poppedActions;
-      default:
-        throw new Error(
-          `Action must be of type string or array ('object'). Received ${typeof actionName}.`
-        );
-    }
-  };
-
-  const addActionToStage = (action, whichList, accessLevel) => {
-    // update stagedStatement
-    let stagedActions = stagedStatement[whichList];
-    if (!stagedActions[accessLevel]) {
-      stagedActions[accessLevel] = [];
-    }
-    stagedActions[accessLevel].push(action);
-
-    setStagedStatement((existingValues) => ({
-      ...existingValues,
-      [whichList]: stagedActions,
-    }));
-  };
-
   const handleActionSelection = (actionName) => {
-    // get access level of selected action
-    let accessLevel;
-    for (const key in actionsData.actions) {
-      for (let actionDetails of actionsData.actions[key]) {
-        if (actionDetails.name === actionName) {
-          accessLevel = key;
-        }
-      }
-    }
+    const accessLevel = Stager.getAccessLevelOfAction(actionsData, actionName);
 
-    const action = disableActionInList(actionName, "actions", accessLevel);
-    addActionToStage(action, "actions", accessLevel);
+    const action = Stager.disableActionInList(
+      actionsData,
+      setActionsData,
+      actionName,
+      "actions",
+      accessLevel
+    );
+
+    Stager.addActionToStage(
+      stagedStatement,
+      setStagedStatement,
+      action,
+      "actions",
+      accessLevel
+    );
   };
 
   const handleWildcardSuggestion = (wildcard) => {
@@ -102,12 +52,16 @@ const ActionsList = ({
       );
     }
 
-    disableActionInList(
+    Stager.disableActionInList(
+      actionsData,
+      setActionsData,
       wildcardData.name,
       "suggestions",
       wildcardData.accessLevel
     );
-    disableActionInList(
+    Stager.disableActionInList(
+      actionsData,
+      setActionsData,
       actionNamesToDisable,
       "actions",
       wildcardData.accessLevel
@@ -117,7 +71,13 @@ const ActionsList = ({
       name: wildcardData.name,
       prefix: wildcardData.servicePrefix,
     };
-    addActionToStage(wildcardObj, "suggestions", wildcardData.accessLevel);
+    Stager.addActionToStage(
+      stagedStatement,
+      setStagedStatement,
+      wildcardObj,
+      "suggestions",
+      wildcardData.accessLevel
+    );
   };
 
   const handleAddAllSelection = (accessLevel) => {
@@ -127,19 +87,13 @@ const ActionsList = ({
       return val;
     });
 
-    setActionsData((existingValues) => ({
-      ...existingValues,
-      [accessLevel]: updatedArray,
-    }));
+    Stager.updateKeyInState(setActionsData, accessLevel, updatedArray);
 
     // update stagedStatement
     let stagedActions = stagedStatement.actions;
     stagedActions[accessLevel] = actionsData.actions[accessLevel];
 
-    setStagedStatement((existingValues) => ({
-      ...existingValues,
-      actions: stagedActions,
-    }));
+    Stager.updateKeyInState(setStagedStatement, "actions", stagedActions);
   };
 
   // const handleAllActionsSelection = () => {};

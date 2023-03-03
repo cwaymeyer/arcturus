@@ -15,6 +15,8 @@ const Statements = ({ statements }) => {
           return (
             <Box
               pad="small"
+              margin={{ top: "xsmall" }}
+              round="small"
               justify="stretch"
               fill="horizontal"
               overflow="auto"
